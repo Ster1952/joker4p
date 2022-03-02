@@ -15,6 +15,7 @@ export default class Game extends Phaser.Scene {
         this.load.image('blackhole', 'src/images/blackhole.png')
         this.load.image('grayhole', 'src/images/grayhole.png')
         this.load.image('background', 'src/images/bluebackground.jpg')
+        this.load.image('joker_sign', 'src/images/joker.png')
 
 
 
@@ -54,7 +55,8 @@ export default class Game extends Phaser.Scene {
         this.bottomHome = this.physics.add.group()
         this.leftHome = this.physics.add.group()
 
-        //this.add.image(0, 0, 'background').setOrigin(0.0)
+        this.add.image(0, 0, 'background').setOrigin(0.0)
+        this.add.image(415,415, 'joker_sign')
         this.outline = this.zone.renderOutline(this.dropZone)
         this.gameBoard.create(50, 90, 'grayhole').refreshBody().setCircle(16) // Hole 72
         this.gameBoard.create(50, 130, 'blackhole').refreshBody().setCircle(16)
