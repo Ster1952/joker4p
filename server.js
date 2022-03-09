@@ -41,11 +41,19 @@ io.on('connection', async (socket) => {
             io.to(room).emit('connectedPlayers', p1,p2,p3,p4)
         })
 
+        socket.on('markerclient', function(posX,posY){
+            socket.to(room).emit('marker',posX,posY)
+        })
+
         socket.on('moveCompletedclient', (t1x, t1y,t2x,t2y,t3x,t3y,t4x,t4y,t5x,t5y,
             l1x, l1y,l2x,l2y,l3x,l3y,l4x,l4y,l5x,l5y, b1x, b1y,b2x,b2y,b3x,b3y,b4x,b4y,b5x,b5y, r1x, r1y,r2x,r2y,r3x,r3y,r4x,r4y,r5x,r5y) => {
             console.log('moveCompeted ', t1x, t1y)
             socket.to(room).volatile.emit('moveCompleted', t1x, t1y,t2x,t2y,t3x,t3y,t4x,t4y,t5x,t5y,
             l1x, l1y,l2x,l2y,l3x,l3y,l4x,l4y,l5x,l5y, b1x, b1y,b2x,b2y,b3x,b3y,b4x,b4y,b5x,b5y, r1x, r1y,r2x,r2y,r3x,r3y,r4x,r4y,r5x,r5y)
+        })
+
+        socket.on('nextplayerclient',() => {
+            io.in(room).volatile.emit('nextplayer')
         })
 
         socket.on('dealCardsclient', function () {
@@ -62,26 +70,29 @@ io.on('connection', async (socket) => {
             io.to(room).emit('reset')
         })
 
-        socket.on('sync_client', function(h1,h2,h3,h4,deck,cardsPlayedFrames){
-            socket.in(room).emit('syncBoard', h1,h2,h3,h4,deck,cardsPlayedFrames)
+        socket.on('sync_client', function(h1,h2,h3,h4,deck,cardsPlayedFrames,pt,ot){
+            socket.in(room).emit('syncBoard', h1,h2,h3,h4,deck,cardsPlayedFrames,pt,ot)
         })
         
 
        
-    }) // end of connection
-    socket.on('disconnect', () => {
-        console.log("A user disconnected: " + socket.id, rooms)
+    }) // end of room connection
+
+    socket.on('disconnect', (reason) => {
+        console.log("A user disconnected: " + socket.id)
         let removeIndex = rooms.map(function(e){return e.connectionID;}).indexOf(socket.id)
         // get the room name of the player that disconnected
         let rm = rooms[removeIndex].gameName
+        let person = rooms[removeIndex].player
         rooms.splice(removeIndex,1)
         // let the other players know some has disconnected
         io.to(rm).emit('PlayerInfo', rooms)
+        io.to(rm).emit('disconnection_info', person, reason)
 
     });
     
-});
-//** end of socket connection */
+});   //** end of socket connection */
+
 httpServer.listen(PORT, async () => {
     try {
         console.log('Listening on port :%s...', httpServer.address().port)

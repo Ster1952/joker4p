@@ -10,12 +10,11 @@ export default class Game extends Phaser.Scene {
     }
     preload() {
 
-        // note cards are preloaded in title scene
-        this.load.atlas('balls', 'src/images/balls.png', 'src/images/balls.json')
-        this.load.image('blackhole', 'src/images/blackhole.png')
-        this.load.image('grayhole', 'src/images/grayhole.png')
+        //**  note playing cards are preloaded in title scene   */
+        
         this.load.image('background', 'src/images/bluebackground.jpg')
         this.load.image('joker_sign', 'src/images/joker.png')
+        this.load.atlas('sphere', 'src/images/marbles.png', 'src/images/marbles.json')
 
 
 
@@ -35,14 +34,18 @@ export default class Game extends Phaser.Scene {
         this.hand3 = []
         this.hand4 = []
         this.deck = []
+        this.playertoken = 'A'
+        this.playerordertoken = "A"
         this.cardsPlayedFrames = []
         this.cardsPlayedObjects = []
         this.badMove = false
         this.dealer = new Dealer(this)
         this.zone = new Zone(this)
         this.dropZone = this.zone.renderZone(1025, 375, 170, 220)
+        this.markerText = self.add.text('')
         const tableID = self.text
         let waiting = true
+
 
         // GAME BOARD HOLES
         this.gameBoard = this.physics.add.group({ immovable: true })
@@ -56,250 +59,252 @@ export default class Game extends Phaser.Scene {
         this.leftHome = this.physics.add.group()
 
         this.add.image(0, 0, 'background').setOrigin(0.0)
-        this.add.image(415,415, 'joker_sign')
+        this.add.image(415, 415, 'joker_sign')
         this.outline = this.zone.renderOutline(this.dropZone)
-        this.gameBoard.create(50, 90, 'grayhole').refreshBody().setCircle(16) // Hole 72
-        this.gameBoard.create(50, 130, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 170, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 210, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 250, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 290, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 330, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 370, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 410, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 450, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 490, 'grayhole').refreshBody().setCircle(16) // Hole 62 - RIGHT Exit
-        this.gameBoard.create(50, 530, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 570, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 610, 'blackhole').refreshBody().setCircle(16)
+
+        this.gameBoard.create(50, 90, 'sphere', 'blackdot').refreshBody().setCircle(16) // Hole 72
+        this.gameBoard.create(50, 130, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 170, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 210, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 250, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 290, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 330, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        
+        this.gameBoard.create(50, 370, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 410, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 450, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 490, 'sphere', 'blackdot').refreshBody().setCircle(16) // Hole 62 - RIGHT Exit
+        this.gameBoard.create(50, 530, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 570, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 610, 'sphere','black').refreshBody().setCircle(16)
         // ----
-        let RightHome = this.gameBoard.create(50, 650, 'grayhole').refreshBody().setCircle(16) // Hole 58 - RIGHT Home Area
+        let RightHome = this.gameBoard.create(50, 650, 'sphere', 'blackdot').refreshBody().setCircle(16) // Hole 58 - RIGHT Home Area
         // ----
-        this.gameBoard.create(50, 690, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 730, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 770, 'blackhole').refreshBody().setCircle(16) //Hole 55 - Bottom left corner
+        this.gameBoard.create(50, 690, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 730, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 770, 'sphere','black').refreshBody().setCircle(16) //Hole 55 - Bottom left corner
 
 
-        this.gameBoard.create(90, 770, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(130, 770, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(170, 770, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(210, 770, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(250, 770, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(290, 770, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(330, 770, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(370, 770, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(410, 770, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(450, 770, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(490, 770, 'grayhole').refreshBody().setCircle(16) // Hole 44 - BOTTOM Exit
-        this.gameBoard.create(530, 770, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(570, 770, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(610, 770, 'blackhole').refreshBody().setCircle(16)
+        this.gameBoard.create(90, 770, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(130, 770, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(170, 770, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(210, 770, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(250, 770, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(290, 770, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(330, 770, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(370, 770, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(410, 770, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(450, 770, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(490, 770, 'sphere', 'blackdot').refreshBody().setCircle(16) // Hole 44 - BOTTOM Exit
+        this.gameBoard.create(530, 770, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(570, 770, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(610, 770, 'sphere','black').refreshBody().setCircle(16)
         // ----
-        let BottomHome = this.gameBoard.create(650, 770, 'grayhole').refreshBody().setCircle(16) // Hole 40 - BOTTOM Home Area
+        let BottomHome = this.gameBoard.create(650, 770, 'sphere', 'blackdot').refreshBody().setCircle(16) // Hole 40 - BOTTOM Home Area
         // ----
-        this.gameBoard.create(690, 770, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(730, 770, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 770, 'blackhole').refreshBody().setCircle(16) // Hole 37 - Bottom right cornet
+        this.gameBoard.create(690, 770, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(730, 770, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 770, 'sphere','black').refreshBody().setCircle(16) // Hole 37 - Bottom right cornet
 
-        this.gameBoard.create(770, 730, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 690, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 650, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 610, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 570, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 530, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 490, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 450, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 410, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 370, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 330, 'grayhole').refreshBody().setCircle(16) // Hole 26 - LEFT Exit 
-        this.gameBoard.create(770, 290, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 250, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 210, 'blackhole').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 730, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 690, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 650, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 610, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 570, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 530, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 490, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 450, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 410, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 370, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 330, 'sphere', 'blackdot').refreshBody().setCircle(16) // Hole 26 - LEFT Exit 
+        this.gameBoard.create(770, 290, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 250, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 210, 'sphere','black').refreshBody().setCircle(16)
         // ----
-        let LeftHome = this.gameBoard.create(770, 170, 'grayhole').refreshBody().setCircle(16) // Hole 22 - LEFT Home Area
+        let LeftHome = this.gameBoard.create(770, 170, 'sphere', 'blackdot').refreshBody().setCircle(16) // Hole 22 - LEFT Home Area
         // ----
-        this.gameBoard.create(770, 130, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 90, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(770, 50, 'blackhole').refreshBody().setCircle(16) // Hole 19 - Top right corner
+        this.gameBoard.create(770, 130, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 90, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(770, 50, 'sphere','black').refreshBody().setCircle(16) // Hole 19 - Top right corner
 
-        this.gameBoard.create(730, 50, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(690, 50, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(650, 50, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(610, 50, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(570, 50, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(530, 50, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(490, 50, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(450, 50, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(410, 50, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(370, 50, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(330, 50, 'grayhole').refreshBody().setCircle(16) //Hole 8 - Top Exit
-        this.gameBoard.create(290, 50, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(250, 50, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(210, 50, 'blackhole').refreshBody().setCircle(16)
+        this.gameBoard.create(730, 50, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(690, 50, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(650, 50, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(610, 50, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(570, 50, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(530, 50, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(490, 50, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(450, 50, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(410, 50, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(370, 50, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(330, 50, 'sphere', 'blackdot').refreshBody().setCircle(16) //Hole 8 - Top Exit
+        this.gameBoard.create(290, 50, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(250, 50, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(210, 50, 'sphere','black').refreshBody().setCircle(16)
         // ----
-        let TopHome = this.gameBoard.create(170, 50, 'grayhole').refreshBody().setCircle(16) // Hole 4 - Top Home Area
+        let TopHome = this.gameBoard.create(170, 50, 'sphere', 'blackdot').refreshBody().setCircle(16) // Hole 4 - Top Home Area
         // ----
-        this.gameBoard.create(130, 50, 'blackhole').refreshBody().setCircle(16)
-        this.gameBoard.create(90, 50, 'grayhole').refreshBody().setCircle(16)
-        this.gameBoard.create(50, 50, 'blackhole').refreshBody().setCircle(16) //Hole 1 - Top Left corner
+        this.gameBoard.create(130, 50, 'sphere','black').refreshBody().setCircle(16)
+        this.gameBoard.create(90, 50, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(50, 50, 'sphere','black').refreshBody().setCircle(16) //Hole 1 - Top Left corner
 
         // TOP HOME
-        this.topHome.create(170, 100, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.topHome.create(170, 140, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.topHome.create(170, 180, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.topHome.create(210, 180, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.topHome.create(250, 180, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(370, 100, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(370, 140, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(370, 180, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(330, 140, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(410, 140, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
+        this.topHome.create(170, 100, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.topHome.create(170, 140, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.topHome.create(170, 180, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.topHome.create(210, 180, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.topHome.create(250, 180, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(370, 100, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(370, 140, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(370, 180, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(330, 140, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(410, 140, 'sphere', 'blackdot').refreshBody().setCircle(16)
 
         // LEFT HOME
-        this.leftHome.create(720, 170, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.leftHome.create(680, 170, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.leftHome.create(640, 170, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.leftHome.create(640, 210, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.leftHome.create(640, 250, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(710, 370, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(670, 370, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(630, 370, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(670, 330, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(670, 410, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
+        this.leftHome.create(720, 170, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.leftHome.create(680, 170, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.leftHome.create(640, 170, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.leftHome.create(640, 210, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.leftHome.create(640, 250, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(710, 370, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(670, 370, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(630, 370, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(670, 330, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(670, 410, 'sphere', 'blackdot').refreshBody().setCircle(16)
 
         // BOTTOM HOME
-        this.bottomHome.create(650, 720, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.bottomHome.create(650, 680, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.bottomHome.create(650, 640, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.bottomHome.create(610, 640, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.bottomHome.create(570, 640, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(450, 720, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(450, 680, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(450, 640, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(490, 680, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(410, 680, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
+        this.bottomHome.create(650, 720, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.bottomHome.create(650, 680, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.bottomHome.create(650, 640, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.bottomHome.create(610, 640, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.bottomHome.create(570, 640, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(450, 720, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(450, 680, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(450, 640, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(490, 680, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(410, 680, 'sphere', 'blackdot').refreshBody().setCircle(16)
 
 
         // RIGHT HOME
-        this.rightHome.create(100, 650, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.rightHome.create(140, 650, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.rightHome.create(180, 650, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.rightHome.create(180, 610, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.rightHome.create(180, 570, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(100, 450, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(140, 450, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(180, 450, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(140, 490, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
-        this.gameBoard.create(140, 410, 'balls', 'gray').setScale(0.32, 0.32).refreshBody().setCircle(50)
+        this.rightHome.create(100, 650, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.rightHome.create(140, 650, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.rightHome.create(180, 650, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.rightHome.create(180, 610, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.rightHome.create(180, 570, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(100, 450, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(140, 450, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(180, 450, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(140, 490, 'sphere', 'blackdot').refreshBody().setCircle(16)
+        this.gameBoard.create(140, 410, 'sphere', 'blackdot').refreshBody().setCircle(16)
 
         //PLAYER MARBLES
         // Top Marbles
 
-        let top1 = this.topMarble.create(370, 100, 'balls', 'green')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let top1 = this.topMarble.create(370, 100, 'sphere', 'green')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'top1', X: 370, Y: 100, homeX: 170, homeY: 50 })
             .setCollideWorldBounds(true)
-        let top2 = this.topMarble.create(370, 140, 'balls', 'green')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let top2 = this.topMarble.create(370, 140, 'sphere', 'green')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'top2', X: 370, Y: 140, homeX: 170, homeY: 50 })
             .setCollideWorldBounds(true)
-        let top3 = this.topMarble.create(370, 180, 'balls', 'green')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let top3 = this.topMarble.create(370, 180, 'sphere', 'green')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'top3', X: 370, Y: 180, homeX: 170, homeY: 50 })
             .setCollideWorldBounds(true)
-        let top4 = this.topMarble.create(330, 140, 'balls', 'green')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let top4 = this.topMarble.create(330, 140, 'sphere', 'green')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'top4', X: 330, Y: 140, homeX: 170, homeY: 50 })
             .setCollideWorldBounds(true)
-        let top5 = this.topMarble.create(410, 140, 'balls', 'green')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let top5 = this.topMarble.create(410, 140, 'sphere', 'green')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'top5', X: 410, Y: 140, homeX: 170, homeY: 50 })
             .setCollideWorldBounds(true)
 
 
         // Left Marbles
-        let left1 = this.leftMarble.create(710, 370, 'balls', 'orange')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let left1 = this.leftMarble.create(710, 370, 'sphere', 'purple')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'left1', X: 710, Y: 370, homeX: 770, homeY: 170 })
             .setCollideWorldBounds(true)
-        let left2 = this.leftMarble.create(670, 370, 'balls', 'orange')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let left2 = this.leftMarble.create(670, 370, 'sphere', 'purple')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'left4', X: 670, Y: 370, homeX: 770, homeY: 170 })
             .setCollideWorldBounds(true)
-        let left3 = this.leftMarble.create(630, 370, 'balls', 'orange')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let left3 = this.leftMarble.create(630, 370, 'sphere', 'purple')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'left3', X: 630, Y: 370, homeX: 770, homeY: 170 })
             .setCollideWorldBounds(true)
-        let left4 = this.leftMarble.create(670, 330, 'balls', 'orange')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let left4 = this.leftMarble.create(670, 330, 'sphere', 'purple')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'left4', X: 670, Y: 330, homeX: 770, homeY: 170 })
             .setCollideWorldBounds(true)
-        let left5 = this.leftMarble.create(670, 410, 'balls', 'orange')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let left5 = this.leftMarble.create(670, 410, 'sphere', 'purple')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'left5', X: 670, Y: 410, homeX: 770, homeY: 170 })
             .setCollideWorldBounds(true)
 
         // Bottom Marbles
-        let bottom1 = this.bottomMarble.create(450, 720, 'balls', 'red')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let bottom1 = this.bottomMarble.create(450, 720, 'sphere', 'red')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'bottom1', X: 450, Y: 720, homeX: 650, homeY: 770 })
             .setCollideWorldBounds(true)
-        let bottom2 = this.bottomMarble.create(450, 680, 'balls', 'red')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let bottom2 = this.bottomMarble.create(450, 680, 'sphere', 'red')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'bottom2', X: 450, Y: 680, homeX: 650, homeY: 770 })
             .setCollideWorldBounds(true)
-        let bottom3 = this.bottomMarble.create(450, 640, 'balls', 'red')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let bottom3 = this.bottomMarble.create(450, 640, 'sphere', 'red')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'bottom3', X: 450, Y: 640, homeX: 650, homeY: 770 })
             .setCollideWorldBounds(true)
-        let bottom4 = this.bottomMarble.create(490, 680, 'balls', 'red')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let bottom4 = this.bottomMarble.create(490, 680, 'sphere', 'red')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'bottom4', X: 490, Y: 680, homeX: 650, homeY: 770 })
             .setCollideWorldBounds(true)
-        let bottom5 = this.bottomMarble.create(410, 680, 'balls', 'red')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let bottom5 = this.bottomMarble.create(410, 680, 'sphere', 'red')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'bottom5', X: 410, Y: 680, homeX: 650, homeY: 770 })
             .setCollideWorldBounds(true)
 
         // Right Marbles
-        let right1 = this.rightMarble.create(100, 450, 'balls', 'yellow')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let right1 = this.rightMarble.create(100, 450, 'sphere', 'yellow')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'right1', X: 100, Y: 450, homeX: 50, homeY: 650 })
             .setCollideWorldBounds(true)
-        let right2 = this.rightMarble.create(140, 450, 'balls', 'yellow')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let right2 = this.rightMarble.create(140, 450, 'sphere', 'yellow')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'right2', X: 140, Y: 450, homeX: 50, homeY: 650 })
             .setCollideWorldBounds(true)
-        let right3 = this.rightMarble.create(180, 450, 'balls', 'yellow')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let right3 = this.rightMarble.create(180, 450, 'sphere', 'yellow')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'right3', X: 180, Y: 450, homeX: 50, homeY: 650 })
             .setCollideWorldBounds(true)
-        let right4 = this.rightMarble.create(140, 490, 'balls', 'yellow')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let right4 = this.rightMarble.create(140, 490, 'sphere', 'yellow')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'right4', X: 140, Y: 490, homeX: 50, homeY: 650 })
             .setCollideWorldBounds(true)
-        let right5 = this.rightMarble.create(140, 410, 'balls', 'yellow')
-            .setScale(0.32, 0.32).setInteractive({ useHandCursor: true, draggable: true })
-            .setCircle(50)
+        let right5 = this.rightMarble.create(140, 410, 'sphere', 'yellow')
+            .setInteractive({ useHandCursor: true, draggable: true })
+            .setCircle(16)
             .setData({ name: 'right5', X: 140, Y: 410, homeX: 50, homeY: 650 })
             .setCollideWorldBounds(true)
 
@@ -313,7 +318,7 @@ export default class Game extends Phaser.Scene {
 
         // CONNECTION TO SERVER ESTABLISHED
 
-        this.socket = io();
+        this.socket = io({ transports: ['websocket'], upgrade: false });
 
         while (waiting) {
             this.player_no = prompt("Please enter a player number (1,2,3,or 4).")
@@ -335,17 +340,21 @@ export default class Game extends Phaser.Scene {
             }
         }
 
-        this.socket.on('connect', async () => {
+        self.socket.on('connect', async () => {
             self.socket.emit('roominfo', tableID, self.player_no)
         })
 
-        this.socket.on('playerWarning', function () {
+        self.socket.on('disconnection_info', function (person, reason) {
+            console.log('Player ' + person + ' disconnect because ' + reason)
+        })
+
+        self.socket.on('playerWarning', function () {
             alert("This game has four players already. Please choose another Game Name")
             self.socket.disconnect()
             scene.start('titlescreen')
         })
 
-        this.socket.on('PlayerInfo', function (data) {
+        self.socket.on('PlayerInfo', function (data) {
             //this shows which players are connected to the room
             let roomsConnected = [];
             let pp1 = false
@@ -358,7 +367,7 @@ export default class Game extends Phaser.Scene {
                     roomsConnected.push(data[i]);
                 }
             }
-            console.log('rooms connected', roomsConnected)
+            //console.log('rooms connected', roomsConnected)
 
             if (roomsConnected.some(p => p.player === '1')) {
                 pp1 = true
@@ -377,7 +386,7 @@ export default class Game extends Phaser.Scene {
 
         })
 
-        this.socket.on('connectedPlayers', function (p1, p2, p3, p4) {
+        self.socket.on('connectedPlayers', function (p1, p2, p3, p4) {
             //console.log('connected player', p1,p2,p3,p4)
             if (p1) {
                 c1.fillColor = 0x00ff00
@@ -405,20 +414,23 @@ export default class Game extends Phaser.Scene {
 
         //  ------- REMOTE PLAYERS SECTION ---------   
 
-        this.socket.on('reset', function () {
+        self.socket.on('reset', function () {
             console.log('reset data available', self.cardsPlayedObjects)
             for (let i = 0; i < self.playersHand.length; i++) {
-                console.log('hands---',self.playersHand[i].frame.name)
+                //console.log('hands---', self.playersHand[i].frame.name)
                 self.playersHand[i].destroy()
             }
             for (let i = 0; i < self.cardsPlayedObjects.length; i++) {
-                console.log(self.cardsPlayedObjects[i])
+                //console.log(self.cardsPlayedObjects[i])
                 self.cardsPlayedObjects[i].destroy()
             }
             self.playersHand = []
             self.cardsPlayedFrames = []
             self.cardsPlayedObjects = []
             self.deck = []
+            self.markerText.setText('')
+            self.playertoken = 'A'
+            self.playerordertoken = "A"
             //console.log('reset status', self.playersHand, self.cardsPlayedObjects, self.deck, self.dropZone)
 
             // Resets Marbles
@@ -435,12 +447,14 @@ export default class Game extends Phaser.Scene {
             self.socket.emit('dealCardsclient')
         })
 
-        this.socket.on('syncBoard', function (h1, h2, h3, h4, deck, cardsPlayedFrames) {
-            console.log('sync Board data recieved ---->>> ', h1, h2, h3, h4, deck, cardsPlayedFrames);
+        self.socket.on('syncBoard', function (h1, h2, h3, h4, deck, cardsPlayedFrames,pt,ot) {
+            //console.log('sync Board data recieved ---->>> ', pt,ot);
             self.DealCardsButton.setText('')
             self.DealCardsButton.disableInteractive()
             self.DealCardsButton.setStyle({ backgroundColor: ' ' })
             self.DealCardsButton.setPadding(0, 0, 0, 0)
+            self.playertoken = pt
+            self.playerordertoken = ot
 
             self.hand1 = h1
             self.hand2 = h2
@@ -457,7 +471,85 @@ export default class Game extends Phaser.Scene {
 
         })
 
-        this.socket.on('moveCompleted', (t1x, t1y, t2x, t2y, t3x, t3y, t4x, t4y, t5x, t5y,
+        self.socket.on('marker', function (posX, posY) {
+            self.markerText.setText('')
+            self.markerText = self.add.text(posX - 16, posY - 22, '*', { color: 'white', fontSize: 'bold 55px' }).setInteractive()
+        })
+
+        self.socket.on('nextplayer', () => {
+            console.log('before nextplayer executed', self.playertoken, self.colorsturn.text)
+            self.nextPlayer.text = ''
+           
+            //-- Purple's Turn
+            if ((self.isPlayerA && self.playertoken === "A") || (self.isPlayerB && self.playertoken === "A") || (self.isPlayerC && self.playertoken === "A") || (self.isPlayerD && self.playertoken === "A")) {
+                let full = homefull(left1, left2, left3, left4, left5, self.leftHome)
+                if (full) {
+                    self.playertoken = "B"
+                    self.colorsturn.text = "Purple's Turn - Y"
+                    self.playerordertoken = "C"
+                } else {
+                    self.playertoken = "B"
+                    self.colorsturn.text = "  Purple's Turn"
+                    self.playerordertoken = "B"
+                }
+            }
+            //-- Red's Turns
+            else if ((self.isPlayerB && self.playertoken === "B") || (self.isPlayerC && self.playertoken === "B") || (self.isPlayerD && self.playertoken === "B") || (self.isPlayerA && self.playertoken === "B")) {
+                let full = homefull(bottom1, bottom2, bottom3, bottom4, bottom5, self.bottomHome)
+                if (full) {
+                    self.playertoken = "C"
+                    self.colorsturn.text = "  Red's Turn - G"
+                    self.playerordertoken = "B"
+                } else {
+                    self.playertoken = "C"
+                    self.colorsturn.text = "     Red's Turn"
+                    self.playerordertoken = "C"
+                }
+
+            }
+            //-- Yellow's Turn
+            else if ((self.isPlayerC && self.playertoken === "C") || (self.isPlayerD && self.playertoken === "C") || (self.isPlayerA && self.playertoken === "C") || (self.isPlayerB && self.playertoken === "C")) {
+                let full = homefull(right1, right2, right3, right4, right5, self.rightHome)
+                if (full) {
+
+                    self.playertoken = "D"
+                    self.colorsturn.text = "Yellow's Turn - O"
+                    self.playerordertoken = "A"
+                } else {
+                    self.playertoken = "D"
+                    self.colorsturn.text = "  Yellow's Turn"
+                    self.playerordertoken = "D"
+                }
+            }
+            //-- Green's Turn
+            else if ((self.isPlayerD && self.playertoken === "D") || (self.isPlayerA && self.playertoken === "D") || (self.isPlayerB && self.playertoken === "D") || (self.isPlayerC && self.playertoken === "D")) {
+                let full = homefull(top1, top2, top3, top4, top5, self.topHome)
+                if (full) {
+                    self.colorsturn.text = " Green's Turn - R"
+                    self.playertoken = "A"
+                    self.playerordertoken = "D"
+                } else {
+                    self.playertoken = "A"
+                    self.colorsturn.text = "   Green's Turn"
+                    self.playerordertoken = "A"
+                }
+            }
+            if (self.isPlayerA && self.playertoken === "A"){
+                self.nextPlayer.text = 'Done Move'
+            } else
+            if (self.isPlayerB && self.playertoken === "B"){
+                self.nextPlayer.text = 'Done Move'
+            } else
+            if (self.isPlayerC && self.playertoken === "C"){
+                self.nextPlayer.text = 'Done Move'
+            } else
+            if (self.isPlayerD && self.playertoken === "D"){
+                self.nextPlayer.text = 'Done Move'
+            }
+            console.log('after nextplayer executed', self.playertoken, self.colorsturn.text)
+        })
+
+        self.socket.on('moveCompleted', (t1x, t1y, t2x, t2y, t3x, t3y, t4x, t4y, t5x, t5y,
             l1x, l1y, l2x, l2y, l3x, l3y, l4x, l4y, l5x, l5y, b1x, b1y, b2x, b2y, b3x, b3y,
             b4x, b4y, b5x, b5y, r1x, r1y, r2x, r2y, r3x, r3y, r4x, r4y, r5x, r5y) => {
 
@@ -473,11 +565,12 @@ export default class Game extends Phaser.Scene {
 
         })
 
-        this.socket.on('cardPlayed', function (gameObject) {
+
+        self.socket.on('cardPlayed', function (gameObject) {
             //console.log('card played by other player', self.isPlayerA,self.isPlayerB,self.isPlayerC,self.isPlayerD)
 
             self.cardsPlayedFrames.push(gameObject.frameKey)
-            console.log('cards played remote player', gameObject.frameKey)
+            //console.log('cards played remote player', gameObject.frameKey)
             let card = new Card(self)
             let obj = card.render(self.dropZone.x, self.dropZone.y, 'cards', gameObject.frameKey).setDepth(0)
             obj.disableInteractive()
@@ -485,41 +578,41 @@ export default class Game extends Phaser.Scene {
 
             if (self.isPlayerA) {
                 let index1 = self.hand1.indexOf(gameObject.frameKey);
-                console.log('index 4 ==========',index1, gameObject.frameKey,self.hand1)
+                // console.log('index 1 ==========', index1, gameObject.frameKey, self.hand1)
                 if (index1 !== -1) {
                     let card = new Card(self)
                     let deckcard1 = card.render(900 + (index1 * 50), 680, 'cards', self.deck[0]).setDepth(index1)
                     self.hand1.splice(index1, 1, deckcard1.frame.name)
-                    self.playersHand.splice(index1,1,deckcard1)
+                    self.playersHand.splice(index1, 1, deckcard1)
                 }
             } else if (self.isPlayerB) {
                 let index2 = self.hand2.indexOf(gameObject.frameKey);
-                console.log('index 2 ==========',index2, gameObject.frameKey,self.hand2)
+                //console.log('index 2 ==========', index2, gameObject.frameKey, self.hand2)
                 if (index2 !== -1) {
                     let card = new Card(self)
                     let deckcard2 = card.render(900 + (index2 * 50), 680, 'cards', self.deck[0]).setDepth(index2)
                     self.hand2.splice(index2, 1, deckcard2.frame.name)
-                    self.playersHand.splice(index2,1,deckcard2)
+                    self.playersHand.splice(index2, 1, deckcard2)
                 }
             } else if (self.isPlayerC) {
                 let index3 = self.hand3.indexOf(gameObject.frameKey);
-                console.log('index 3 ==========',index3, gameObject.frameKey,self.hand3)
+                //console.log('index 3 ==========', index3, gameObject.frameKey, self.hand3)
                 if (index3 !== -1) {
                     let card = new Card(self)
                     let deckcard3 = card.render(900 + (index3 * 50), 680, 'cards', self.deck[0]).setDepth(index3)
                     self.hand3.splice(index3, 1, deckcard3.frame.name)
-                    self.playersHand.splice(index3,1,deckcard3)
+                    self.playersHand.splice(index3, 1, deckcard3)
                 }
             } else if (self.isPlayerD) {
                 let index4 = self.hand4.indexOf(gameObject.frameKey);
-                console.log('index 4 ==========',index4, gameObject.frameKey,self.hand4)
+                // console.log('index 4 ==========', index4, gameObject.frameKey, self.hand4)
                 if (index4 !== -1) {
                     let card = new Card(self)
                     let deckcard4 = card.render(900 + (index4 * 50), 680, 'cards', self.deck[0]).setDepth(index4)
                     self.hand4.splice(index4, 1, deckcard4.frame.name)
-                    self.playersHand.splice(index4,1,deckcard4)
+                    self.playersHand.splice(index4, 1, deckcard4)
                 }
-            }   
+            }
 
             self.deck.shift()
             //console.log('card played -- players hands---',self.hand1,self.hand2,self.hand3,self.hand4)
@@ -533,14 +626,18 @@ export default class Game extends Phaser.Scene {
         })
 
 
-        this.socket.on('dealCards', function (hand) {
+        self.socket.on('dealCards', function (hand) {
             self.hand1 = hand[0]
             self.hand2 = hand[1]
             self.hand3 = hand[2]
             self.hand4 = hand[3]
             self.playersHand = self.dealer.dealCards(hand)
             self.deck = hand[4]
-            console.log('----  player hands ----', self.playersHand)
+            self.colorsturn.text = "   Green's Turn"
+            if (self.isPlayerA){
+                self.nextPlayer.text = 'Done Move'
+            }
+            // console.log('----  player hands ----', self.playersHand)
             self.DealCardsButton.setText('')
             self.DealCardsButton.disableInteractive()
             self.DealCardsButton.setStyle({ backgroundColor: ' ' })
@@ -549,11 +646,21 @@ export default class Game extends Phaser.Scene {
         })
 
         // -------- LOCAL PLAYER SECTION -----------
+
+
         this.resetGame = this.add.text(964, 40, 'New Game', { fontSize: 'bold 24px' })
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', () => self.socket.emit('resetclient'))
             .on('pointerover', () => this.resetGame.setStyle({ fill: '#ff0000' }))
             .on('pointerout', () => this.resetGame.setStyle({ fill: '#ffffff' }))
+
+        this.nextPlayer = this.add.text(320, 450, '', { fontSize: 'bold 36px' })
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', () => self.socket.emit('nextplayerclient'))
+            .on('pointerover', () => this.nextPlayer.setStyle({ fill: '#ff0000' }))
+            .on('pointerout', () => this.nextPlayer.setStyle({ fill: '#ffffff' }))
+
+        this.colorsturn = this.add.text(870, 190, '', { fontSize: 'bold 30px', color: 'yellow' })
 
         this.DealCardsButton = this.add.text(945, 200, 'Deal Cards', { fontSize: 'bold 24px' })
             .setPadding(7)
@@ -572,9 +679,7 @@ export default class Game extends Phaser.Scene {
             let resyncboard = confirm("Press the OK button if you wish to help a missing player recover their game data. Note the missing player should not use this feature.")
             if (resyncboard === true) {
                 sendcompletedUpdate()
-
-                // console.log('sync data', self.hand1,self.hand2,self.hand3, self.hand4,self.cardsPlayedFrames, self.deck)
-                self.socket.emit('sync_client', self.hand1, self.hand2, self.hand3, self.hand4, self.deck, self.cardsPlayedFrames)
+                self.socket.emit('sync_client', self.hand1, self.hand2, self.hand3, self.hand4, self.deck, self.cardsPlayedFrames,self.playertoken,self.playerordertoken)
             } else {
                 return false
             }
@@ -582,70 +687,116 @@ export default class Game extends Phaser.Scene {
 
 
         this.input.on('dragstart', function (pointer, gameObject) {
-            this.children.bringToTop(gameObject)
+            console.log('dragstart', self.playertoken)
+            if ((self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "A") || 
+            (self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "D") ||
+            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "B") || 
+            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "C") ||
+            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "C") || 
+            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "B") ||
+            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "D") || 
+            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "A"))  {
+                if (gameObject.type === "Sprite") {
+                    self.markerText.setText('')
+                    self.markerText = self.add.text(gameObject.x - 16, gameObject.y - 22, '*', { color: 'white', fontSize: 'bold 55px' }).setInteractive()
+                    this.children.bringToTop(gameObject)
+                    self.socket.emit('markerclient', gameObject.x, gameObject.y)
+                } else {
+                    this.children.bringToTop(gameObject)
+                }
+            }
+
         }, this)
 
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
-            if (gameObject.type === "Sprite") {
-                sendcompletedUpdate()
-            }           
+            console.log('drag',gameObject.type)
+            if ((self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "A") || 
+            (self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "D") ||
+            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "B") || 
+            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "C") ||
+            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "C") || 
+            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "B") ||
+            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "D") || 
+            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "A"))  {
+                gameObject.x = dragX;
+                gameObject.y = dragY;
+                if (gameObject.type === "Sprite") {
+                    sendcompletedUpdate()
+                }
+            }
         })
 
         this.input.on('drop', function (pointer, gameObject, dropZone) {
-            //console.log('gameobject', gameObject.frame.name)
+            console.log('gameobject', self.playertoken,self.playerordertoken)
             // Check to see if marble is dropped in the dropZone
-            if (gameObject.type === "Image") {
-                gameObject.x = dropZone.x
-                gameObject.y = dropZone.y
-                gameObject.input.enabled = false
-                self.socket.volatile.emit('cardPlayedclient', gameObject)
-                gameObject.destroy() // If card in dropZone not destroyed we get two cards being played in dropZone
+            if ((self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "A") || 
+            (self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "D") ||
+            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "B") || 
+            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "C") ||
+            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "C") || 
+            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "B") ||
+            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "D") || 
+            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "A")) {
+                if (gameObject.type === "Image") {
+                    gameObject.x = dropZone.x
+                    gameObject.y = dropZone.y
+                    gameObject.input.enabled = false
+                    self.socket.emit('cardPlayedclient', gameObject)
+                    gameObject.destroy() // If card in dropZone not destroyed we get two cards being played in dropZone
+                }
             }
         })
 
         this.input.on('dragend', function (pointer, gameObject, dropped) {
-            console.log('gameobject', gameObject)
-            self.badMove = false
-            if (!dropped && gameObject.type === "Image") {
-                if (self.isPlayerA) {
-                    let pos1 = self.hand1.indexOf(gameObject.frame.name)
-                    if (pos1 !== -1){
-                        gameObject.setDepth(pos1)
+            //  console.log('gameobject', gameObject)
+            if ((self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "A") || 
+            (self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "D") ||
+            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "B") || 
+            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "C") ||
+            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "C") || 
+            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "B") ||
+            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "D") || 
+            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "A"))  {
+                self.badMove = false
+                if (!dropped && gameObject.type === "Image") {
+                    if (self.isPlayerA) {
+                        let pos1 = self.hand1.indexOf(gameObject.frame.name)
+                        if (pos1 !== -1) {
+                            gameObject.setDepth(pos1)
+                        }
+                    } else if (self.isPlayerB) {
+                        let pos2 = self.hand2.indexOf(gameObject.frame.name)
+                        if (pos2 !== -1) {
+                            gameObject.setDepth(pos2)
+                        }
+                    } else if (self.isPlayerC) {
+                        let pos3 = self.hand3.indexOf(gameObject.frame.name)
+                        if (pos3 !== -1) {
+                            gameObject.setDepth(pos3)
+                        }
+                    } else if (self.isPlayerD) {
+                        let pos4 = self.hand4.indexOf(gameObject.frame.name)
+                        if (pos4 !== -1) {
+                            gameObject.setDepth(pos4)
+                        }
                     }
-                } else if (self.isPlayerB) {
-                    let pos2 = self.hand2.indexOf(gameObject.frame.name)
-                    if (pos2 !== -1){
-                        gameObject.setDepth(pos2)
-                    }
-                } else if (self.isPlayerC) {
-                    let pos3 = self.hand3.indexOf(gameObject.frame.name)
-                    if (pos3 !== -1){
-                        gameObject.setDepth(pos3)
-                    }
-                } else if (self.isPlayerD) {
-                    let pos4 = self.hand4.indexOf(gameObject.frame.name)
-                    if (pos4 !== -1){
-                        gameObject.setDepth(pos4)
-                    }
-                }
-                gameObject.x = gameObject.input.dragStartX
-                gameObject.y = gameObject.input.dragStartY
-            } else {
-
-                self.physics.world.overlap(gameObject, self.leftMarble, oMarble)    // gameObject overlays Orange marble
-                self.physics.world.overlap(gameObject, self.rightMarble, yMarble)   // gameObject overlays Yellow marble
-                self.physics.world.overlap(gameObject, self.bottomMarble, rMarble)  // gameObject overlays Red marble
-                self.physics.world.overlap(gameObject, self.topMarble, gMarble)     // gameObject overlays Green marble
-
-                console.log('bad move flag', self.badMove)
-                if (!self.badMove) {
-
-                    self.physics.world.overlap(gameObject, [self.gameBoard, self.topHome, self.bottomHome, self.leftHome, self.rightHome], board)
-                    self.badMove = false
+                    gameObject.x = gameObject.input.dragStartX
+                    gameObject.y = gameObject.input.dragStartY
                 } else {
-                    sendcompletedUpdate()
+
+                    self.physics.world.overlap(gameObject, self.leftMarble, oMarble)    // gameObject overlays Purple marble
+                    self.physics.world.overlap(gameObject, self.rightMarble, yMarble)   // gameObject overlays Yellow marble
+                    self.physics.world.overlap(gameObject, self.bottomMarble, rMarble)  // gameObject overlays Red marble
+                    self.physics.world.overlap(gameObject, self.topMarble, gMarble)     // gameObject overlays Green marble
+
+                    //console.log('bad move flag', self.badMove)
+                    if (!self.badMove) {
+
+                        self.physics.world.overlap(gameObject, [self.gameBoard, self.topHome, self.bottomHome, self.leftHome, self.rightHome], board)
+                        self.badMove = false
+                    } else {
+                        sendcompletedUpdate()
+                    }
                 }
             }
 
@@ -663,19 +814,35 @@ export default class Game extends Phaser.Scene {
         })
         // ----- FUNCTION SECTION --------
 
+        function homefull(x1, x2, x3, x4, x5, Home) {
+            let p1 = false
+            let p2 = false
+            let p3 = false
+            let p4 = false
+            let p5 = false
+            p1 = self.physics.world.overlap(x1, Home)
+            p2 = self.physics.world.overlap(x2, Home)
+            p3 = self.physics.world.overlap(x3, Home)
+            p4 = self.physics.world.overlap(x4, Home)
+            p5 = self.physics.world.overlap(x5, Home)
+            if (p1, p2, p3, p4, p5) {
+                return true
+            } else {
+                return false
+            }
+        }
+
 
         function board(obj, lm) {
-            // Game marble overlays Gray Hole or Black Hole (aligns game marble with hole on the board)
-            //console.log('--------board------', obj.frame.name, lm.frame.name)
-            if ((obj.frame.name === 'green' || obj.frame.name === 'red' || obj.frame.name === 'orange' || obj.frame.name === 'yellow') &&
-                (lm.texture.key === "grayhole" || lm.texture.key === "blackhole" || lm.frame.name === "gray")) {
+            // Game marble overlays blackdot Hole or Black Hole (aligns game marble with hole on the board)
+            //console.log('--------board------', obj.frame.name, lm.frame.name,lm.x,lm.y)
+            
+            if ((obj.frame.name === 'green' || obj.frame.name === 'red' || obj.frame.name === 'purple' || obj.frame.name === 'yellow') &&
+            (lm.frame.name === "blackdot" || lm.frame.name === "black")) {
                 self.gameObject = obj
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = lm.x
                 self.gameObject.y = lm.y
-
-                //console.log('board send data', self.gameObject.x, top1.x, self.gameObject.y, top1.y)
-                //console.log('other', obj.data.values.name)
 
                 sendcompletedUpdate()
             }
@@ -691,11 +858,11 @@ export default class Game extends Phaser.Scene {
             let gh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, TopHome) // Green home is occupied with a red marble
             let gh_occupied_with_green = self.physics.world.overlap(self.topMarble, TopHome)  // Green home entrance is occupied with green marble
             let rh_occupied_with_yellow = self.physics.world.overlap(self.leftMarble, BottomHome) // Red home entrance is occupied with yellow marble
-            let rh_occupied_with_orange = self.physics.world.overlap(self.rightMarble, BottomHome)// Red home entrance is occupied with orange marble
+            let rh_occupied_with_purple = self.physics.world.overlap(self.rightMarble, BottomHome)// Red home entrance is occupied with purple marble
 
             //Invalid move - same colour overlaps same colour (move back to origin)
             if (item.frame.name === group.frame.name) {
-                console.log('bad move found colour on colour', item.data.values.name, item.input.dragStartX)
+                // console.log('bad move found colour on colour', item.data.values.name, item.input.dragStartX)
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
@@ -737,7 +904,7 @@ export default class Game extends Phaser.Scene {
                 if (rh_occupied_with_green) {
                     self.physics.world.overlap(self.topMarble, BottomHome, move_partners_Marble)
                 }
-                else if (rh_occupied_with_orange) {
+                else if (rh_occupied_with_purple) {
                     self.physics.world.overlap(self.rightMarble, BottomHome, move_opponets_Marble)
                 }
                 else if (rh_occupied_with_yellow) {
@@ -750,8 +917,8 @@ export default class Game extends Phaser.Scene {
                 self.badMove = false
 
             }
-            // Orange or Yellow overlays Red
-            else if ((item.frame.name === "orange" || item.frame.name === "yellow") && (group.frame.name === "red")) {
+            // Purple or Yellow overlays Red
+            else if ((item.frame.name === "purple" || item.frame.name === "yellow") && (group.frame.name === "red")) {
                 self.gameObject = group
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = group.data.values.X
@@ -769,12 +936,12 @@ export default class Game extends Phaser.Scene {
             let gh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, TopHome) // Green home is occupied with a red marble
             let rh_occupied_with_green = self.physics.world.overlap(self.topMarble, BottomHome) // Red home is ocuppied with a green marble
             let gh_occupied_with_green = self.physics.world.overlap(self.topMarble, TopHome)  // Green home entrance is occupied with green marble
-            let gh_occupied_with_orange = self.physics.world.overlap(self.rightMarble, TopHome) // Green home entrance is occupied by orange marble
+            let gh_occupied_with_purple = self.physics.world.overlap(self.rightMarble, TopHome) // Green home entrance is occupied by purple marble
             let gh_occupied_with_yellow = self.physics.world.overlap(self.leftMarble, TopHome) // Green home entrance is occupied by yellow marble
 
             //Invalid move - same colour overlaps same colour (move back to origin)
             if (item.frame.name === group.frame.name) {
-                console.log('bad move found colour on colour', item.data.values.name, item.input.dragStartX)
+                //  console.log('bad move found colour on colour', item.data.values.name, item.input.dragStartX)
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
@@ -814,7 +981,7 @@ export default class Game extends Phaser.Scene {
                 if (gh_occupied_with_red) {
                     self.physics.world.overlap(self.bottomMarble, TopHome, move_partners_Marble)
                 }
-                else if (gh_occupied_with_orange) {
+                else if (gh_occupied_with_purple) {
                     self.physics.world.overlap(self.rightMarble, TopHome, move_opponets_Marble)
                 }
                 else if (gh_occupied_with_yellow) {
@@ -827,8 +994,8 @@ export default class Game extends Phaser.Scene {
                 self.badMove = false
             }
 
-            // Orange or Yellow overlays Green 
-            else if ((item.frame.name === "orange" || item.frame.name === "yellow") && (group.frame.name === "green")) {
+            // Purple or Yellow overlays Green 
+            else if ((item.frame.name === "purple" || item.frame.name === "yellow") && (group.frame.name === "green")) {
                 self.gameObject = group
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = group.data.values.X
@@ -841,50 +1008,50 @@ export default class Game extends Phaser.Scene {
 
         function oMarble(item, group) {
             // console.log('---oMarble actived ---', item.frame.name, group.frame.name)
-            let oh_occupied_with_orange = self.physics.world.overlap(self.leftMarble, LeftHome)  //Orange home entrance is occupied with a  orange marble
+            let oh_occupied_with_purple = self.physics.world.overlap(self.leftMarble, LeftHome)  //Purple home entrance is occupied with a purple marble
             let yh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, RightHome)  //Yellow home entrance is occupied with a yellow marble
-            let oh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, LeftHome) // Orange home is occuppied with a yellow marble
-            let yh_occupied_with_orange = self.physics.world.overlap(self.leftMarble, RightHome) // Yellow home is ocuppied with a orange marble 
-            let oh_occupied_with_green = self.physics.world.overlap(self.topMarble, LeftHome) // Orange home is ocuppied with a green marble 
-            let oh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, LeftHome) // Orange home is ocuppied with a green marble 
+            let oh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, LeftHome) // Purple home is occuppied with a yellow marble
+            let yh_occupied_with_purple = self.physics.world.overlap(self.leftMarble, RightHome) // Yellow home is ocuppied with a purple marble 
+            let oh_occupied_with_green = self.physics.world.overlap(self.topMarble, LeftHome) // Purple home is ocuppied with a green marble 
+            let oh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, LeftHome) // Purple home is ocuppied with a green marble 
 
             //Invalid move - same colour overlaps same colour (move back to origin)
             if (item.frame.name === group.frame.name) {
-                console.log('bad move found colour on colour', item.data.values.name, item.input.dragStartX)
+                // console.log('bad move found colour on colour', item.data.values.name, item.input.dragStartX)
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
                 self.gameObject.y = item.input.dragStartY
                 self.badMove = true
             }
-            //Invalid move - can't move yellow marble onto orange marble as orange home entrance is already occupied with a orange marble
-            else if (item.frame.name === 'yellow' && oh_occupied_with_orange && group.frame.name === "orange") {
-                alert("INVALID MOVE - Orange Home entrance is occupied with a ORANGE Marble.")
+            //Invalid move - can't move yellow marble onto purple marble as purple home entrance is already occupied with a purple marble
+            else if (item.frame.name === 'yellow' && oh_occupied_with_purple && group.frame.name === "purple") {
+                alert("INVALID MOVE - Purple Home entrance is occupied with a PURPLE Marble.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
                 self.gameObject.y = item.input.dragStartY
                 self.badMove = true
             }
-            else if (item.frame.name === 'yellow' && yh_occupied_with_orange && oh_occupied_with_yellow && group.frame.name === "orange") {
-                alert("INVALID MOVE - Yellow Home entrance is blocked as Yellow marble at Orange Home entrance is also block by Orange marble at the Yellow Home entrance.")
+            else if (item.frame.name === 'yellow' && yh_occupied_with_purple && oh_occupied_with_yellow && group.frame.name === "purple") {
+                alert("INVALID MOVE - Yellow Home entrance is blocked as Yellow marble at Purple Home entrance is also block by Purple marble at the Yellow Home entrance.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
                 self.gameObject.y = item.input.dragStartY
                 self.badMove = true
             }
-            //Invalid move - can't move yellow marble onto orange marble as orange home entrance and yellow home are already occupied yellow marbles
-            else if (item.frame.name === 'yellow' && yh_occupied_with_yellow && oh_occupied_with_yellow && group.frame.name === "orange") {
-                alert("INVALID MOVE - Orange Home entrance and Yellow Home entrance are both occupied with Yellow Marbles.")
+            //Invalid move - can't move yellow marble onto purple marble as purple home entrance and yellow home are already occupied yellow marbles
+            else if (item.frame.name === 'yellow' && yh_occupied_with_yellow && oh_occupied_with_yellow && group.frame.name === "purple") {
+                alert("INVALID MOVE - Purple Home entrance and Yellow Home entrance are both occupied with Yellow Marbles.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
                 self.gameObject.y = item.input.dragStartY
                 self.badMove = true
             }
-            // Yellow overlays Partner's Orange ---> moves partner's orange home
-            else if (item.frame.name === "yellow" && group.frame.name === "orange") {
+            // Yellow overlays Partner's Purple ---> moves partner's purple home
+            else if (item.frame.name === "yellow" && group.frame.name === "purple") {
                 // Check to see if yellow home is occupied, if so move marble
                 if (oh_occupied_with_yellow) {
                     self.physics.world.overlap(self.rightMarble, LeftHome, move_partners_Marble)
@@ -901,9 +1068,9 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.y = group.data.values.homeY
                 self.badMove = false
             }
-            //Green or Red overlays Orange
-            else if ((item.frame.name === "green" || item.frame.name === "red") && group.frame.name === "orange") {
-                console.log('green or red active')
+            //Green or Red overlays Purple
+            else if ((item.frame.name === "green" || item.frame.name === "red") && group.frame.name === "purple") {
+                // console.log('green or red active')
                 self.gameObject = group
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = group.data.values.X
@@ -916,16 +1083,16 @@ export default class Game extends Phaser.Scene {
 
         function yMarble(item, group) {
             //console.log('---yMarble actived ---', item.frame.name, group.frame.name)
-            let oh_occupied_with_orange = self.physics.world.overlap(self.leftMarble, LeftHome)  //Orange home entrance is occupied with a  orange marble
+            let oh_occupied_with_purple = self.physics.world.overlap(self.leftMarble, LeftHome)  //Purple home entrance is occupied with a  purple marble
             let yh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, RightHome)  //Yellow home entrance is occupied with a yellow marble
-            let oh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, LeftHome) // Orange home is occuppied with a yellow marble
-            let yh_occupied_with_orange = self.physics.world.overlap(self.leftMarble, RightHome) // Yellow home is ocuppied with a orange marble 
+            let oh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, LeftHome) // Purple home is occuppied with a yellow marble
+            let yh_occupied_with_purple = self.physics.world.overlap(self.leftMarble, RightHome) // Yellow home is ocuppied with a purple marble 
             let yh_occupied_with_green = self.physics.world.overlap(self.topMarble, RightHome)  // Yellow home is occupied with a green marble
             let yh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, RightHome)  // Yellow home is occupied with a red marble
 
             //Invalid move - same colour overlaps same colour (move back to origin)
             if (item.frame.name === group.frame.name) {
-                console.log('bad move found colour on colour', item.data.values.name, item.input.dragStartX)
+                //console.log('bad move found colour on colour', item.data.values.name, item.input.dragStartX)
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
@@ -933,8 +1100,8 @@ export default class Game extends Phaser.Scene {
                 self.badMove = true
             }
 
-            //Invalid move - can't move orange marble onto yellow marble as yellow home entrance is already occupied with a yellow marble
-            else if (item.frame.name === 'orange' && yh_occupied_with_yellow && group.frame.name === "yellow") {
+            //Invalid move - can't move purple marble onto yellow marble as yellow home entrance is already occupied with a yellow marble
+            else if (item.frame.name === 'purple' && yh_occupied_with_yellow && group.frame.name === "yellow") {
                 alert("INVALID MOVE - Yellow Home entrance is occupied with a YELLOW Marble.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
@@ -943,18 +1110,18 @@ export default class Game extends Phaser.Scene {
                 self.badMove = true
             }
 
-            //Invalid move - can't move orange marble onto yellow marble as yellow home entrance is occupied by red marble
-            else if (item.frame.name === 'orange' && yh_occupied_with_orange && oh_occupied_with_yellow && group.frame.name === "yellow") {
-                alert("INVALID MOVE - Orange Home entrance is blocked as the Orange marble at Yellow Home entrance is also block by Orange marble at the Orange Home entrance.")
+            //Invalid move - can't move purple marble onto yellow marble as yellow home entrance is occupied by red marble
+            else if (item.frame.name === 'purple' && yh_occupied_with_purple && oh_occupied_with_yellow && group.frame.name === "yellow") {
+                alert("INVALID MOVE - Purple Home entrance is blocked as the Purple marble at Yellow Home entrance is also block by Purple marble at the Purple Home entrance.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
                 self.gameObject.y = item.input.dragStartY
                 self.badMove = true
             }
-            //Invalid move - can't move orange marble onto yellow marble as orange home entrance and yellow home are already occupied by orange marbles
-            else if (item.frame.name === 'orange' && yh_occupied_with_orange && oh_occupied_with_orange && group.frame.name === "yellow") {
-                alert("INVALID MOVE - Orange Home entrance and Yellow Home entrance are both occupied with Orange Marbles.")
+            //Invalid move - can't move purple marble onto yellow marble as purple home entrance and yellow home are already occupied by purple marbles
+            else if (item.frame.name === 'purple' && yh_occupied_with_purple && oh_occupied_with_purple && group.frame.name === "yellow") {
+                alert("INVALID MOVE - Purple Home entrance and Yellow Home entrance are both occupied with Purple Marbles.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
@@ -962,10 +1129,10 @@ export default class Game extends Phaser.Scene {
                 self.badMove = true
             }
 
-            // Orange overlays Partner's Yellow  ---> movers partner's yellow homw
-            else if (item.frame.name === "orange" && group.frame.name === "yellow") {
-                // Check to see if orange home is occupied, if so move marble
-                if (yh_occupied_with_orange) {
+            // Purple overlays Partner's Yellow  ---> movers partner's yellow homw
+            else if (item.frame.name === "purple" && group.frame.name === "yellow") {
+                // Check to see if purple home is occupied, if so move marble
+                if (yh_occupied_with_purple) {
                     self.physics.world.overlap(self.leftMarble, RightHome, move_partners_Marble)
                 }
                 else if (yh_occupied_with_green) {
@@ -1001,16 +1168,8 @@ export default class Game extends Phaser.Scene {
             group.y = group.data.values.Y
         }
 
-        // function reDisplay(displayhand) {
-        //     for (let i = 0; i < 6; i++) {
-        //         let PCard = new Card(self);
-        //         PCard.render(900 + (i * 50), 680, 'cards', displayhand[i]).setDepth(i)
-        //     }
-        // }
-
-
         function sendcompletedUpdate() {
-            self.socket.volatile.emit('moveCompletedclient', top1.x, top1.y, top2.x, top2.y, top3.x, top3.y, top4.x, top4.y, top5.x, top5.y,
+            self.socket.emit('moveCompletedclient', top1.x, top1.y, top2.x, top2.y, top3.x, top3.y, top4.x, top4.y, top5.x, top5.y,
                 left1.x, left1.y, left2.x, left2.y, left3.x, left3.y, left4.x, left4.y, left5.x, left5.y,
                 bottom1.x, bottom1.y, bottom2.x, bottom2.y, bottom3.x, bottom3.y, bottom4.x, bottom4.y, bottom5.x, bottom5.y,
                 right1.x, right1.y, right2.x, right2.y, right3.x, right3.y, right4.x, right4.y, right5.x, right5.y)
