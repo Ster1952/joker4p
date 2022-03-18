@@ -12,7 +12,7 @@ export default class Game extends Phaser.Scene {
 
         //**  note playing cards are preloaded in title scene   */
         
-        this.load.image('background', 'src/images/sand.jpg')
+        this.load.image('background', 'src/images/sand.png')
         this.load.image('joker_sign', 'src/images/joker.png')
         this.load.atlas('sphere', 'src/images/marbles.png', 'src/images/marbles.json')
 
