@@ -52,9 +52,6 @@ io.on('connection', async (socket) => {
             l1x, l1y,l2x,l2y,l3x,l3y,l4x,l4y,l5x,l5y, b1x, b1y,b2x,b2y,b3x,b3y,b4x,b4y,b5x,b5y, r1x, r1y,r2x,r2y,r3x,r3y,r4x,r4y,r5x,r5y)
         })
 
-        socket.on('nextplayerclient',() => {
-            io.in(room).volatile.emit('nextplayer')
-        })
 
         socket.on('dealCardsclient', function () {
             // console.log('hands',hands)

@@ -34,8 +34,8 @@ export default class Game extends Phaser.Scene {
         this.hand3 = []
         this.hand4 = []
         this.deck = []
-        this.playertoken = 'A'
-        this.playerordertoken = "A"
+        //this.playertoken = 'A'
+        //this.playerordertoken = "A"
         this.cardsPlayedFrames = []
         this.cardsPlayedObjects = []
         this.badMove = false
@@ -429,8 +429,7 @@ export default class Game extends Phaser.Scene {
             self.cardsPlayedObjects = []
             self.deck = []
             self.markerText.setText('')
-            self.playertoken = 'A'
-            self.playerordertoken = "A"
+    
             //console.log('reset status', self.playersHand, self.cardsPlayedObjects, self.deck, self.dropZone)
 
             // Resets Marbles
@@ -500,78 +499,6 @@ export default class Game extends Phaser.Scene {
             self.markerText = self.add.text(posX - 16, posY - 22, '*', { color: 'white', fontSize: 'bold 55px' }).setInteractive()
         })
 
-        self.socket.on('nextplayer', () => {
-            console.log('before nextplayer executed', self.playertoken, self.colorsturn.text)
-            self.nextPlayer.text = ''
-           
-            //-- Purple's Turn
-            if ((self.isPlayerA && self.playertoken === "A") || (self.isPlayerB && self.playertoken === "A") || (self.isPlayerC && self.playertoken === "A") || (self.isPlayerD && self.playertoken === "A")) {
-                let full = homefull(left1, left2, left3, left4, left5, self.leftHome)
-                if (full) {
-                    self.playertoken = "B"
-                    self.colorsturn.text = "Purple's Turn - Y"
-                    self.playerordertoken = "C"
-                } else {
-                    self.playertoken = "B"
-                    self.colorsturn.text = "  Purple's Turn"
-                    self.playerordertoken = "B"
-                }
-            }
-            //-- Red's Turns
-            else if ((self.isPlayerB && self.playertoken === "B") || (self.isPlayerC && self.playertoken === "B") || (self.isPlayerD && self.playertoken === "B") || (self.isPlayerA && self.playertoken === "B")) {
-                let full = homefull(bottom1, bottom2, bottom3, bottom4, bottom5, self.bottomHome)
-                if (full) {
-                    self.playertoken = "C"
-                    self.colorsturn.text = "  Red's Turn - G"
-                    self.playerordertoken = "B"
-                } else {
-                    self.playertoken = "C"
-                    self.colorsturn.text = "     Red's Turn"
-                    self.playerordertoken = "C"
-                }
-
-            }
-            //-- Yellow's Turn
-            else if ((self.isPlayerC && self.playertoken === "C") || (self.isPlayerD && self.playertoken === "C") || (self.isPlayerA && self.playertoken === "C") || (self.isPlayerB && self.playertoken === "C")) {
-                let full = homefull(right1, right2, right3, right4, right5, self.rightHome)
-                if (full) {
-
-                    self.playertoken = "D"
-                    self.colorsturn.text = "Yellow's Turn - O"
-                    self.playerordertoken = "A"
-                } else {
-                    self.playertoken = "D"
-                    self.colorsturn.text = "  Yellow's Turn"
-                    self.playerordertoken = "D"
-                }
-            }
-            //-- Green's Turn
-            else if ((self.isPlayerD && self.playertoken === "D") || (self.isPlayerA && self.playertoken === "D") || (self.isPlayerB && self.playertoken === "D") || (self.isPlayerC && self.playertoken === "D")) {
-                let full = homefull(top1, top2, top3, top4, top5, self.topHome)
-                if (full) {
-                    self.colorsturn.text = " Green's Turn - R"
-                    self.playertoken = "A"
-                    self.playerordertoken = "D"
-                } else {
-                    self.playertoken = "A"
-                    self.colorsturn.text = "   Green's Turn"
-                    self.playerordertoken = "A"
-                }
-            }
-            if (self.isPlayerA && self.playertoken === "A"){
-                self.nextPlayer.text = 'Done Move'
-            } else
-            if (self.isPlayerB && self.playertoken === "B"){
-                self.nextPlayer.text = 'Done Move'
-            } else
-            if (self.isPlayerC && self.playertoken === "C"){
-                self.nextPlayer.text = 'Done Move'
-            } else
-            if (self.isPlayerD && self.playertoken === "D"){
-                self.nextPlayer.text = 'Done Move'
-            }
-            console.log('after nextplayer executed', self.playertoken, self.colorsturn.text)
-        })
 
         self.socket.on('moveCompleted', (t1x, t1y, t2x, t2y, t3x, t3y, t4x, t4y, t5x, t5y,
             l1x, l1y, l2x, l2y, l3x, l3y, l4x, l4y, l5x, l5y, b1x, b1y, b2x, b2y, b3x, b3y,
@@ -657,10 +584,7 @@ export default class Game extends Phaser.Scene {
             self.hand4 = hand[3]
             self.playersHand = self.dealer.dealCards(hand)
             self.deck = hand[4]
-            self.colorsturn.text = "   Green's Turn"
-            if (self.isPlayerA){
-                self.nextPlayer.text = 'Done Move'
-            }
+            
             // console.log('----  player hands ----', self.playersHand)
             self.DealCardsButton.setText('')
             self.DealCardsButton.disableInteractive()
@@ -677,12 +601,6 @@ export default class Game extends Phaser.Scene {
             .on('pointerdown', () => self.socket.emit('resetclient'))
             .on('pointerover', () => this.resetGame.setStyle({ fill: '#ff0000' }))
             .on('pointerout', () => this.resetGame.setStyle({ fill: '#ffffff' }))
-
-        this.nextPlayer = this.add.text(320, 450, '', { fontSize: 'bold 36px' })
-            .setInteractive({ useHandCursor: true })
-            .on('pointerdown', () => self.socket.emit('nextplayerclient'))
-            .on('pointerover', () => this.nextPlayer.setStyle({ fill: '#ff0000' }))
-            .on('pointerout', () => this.nextPlayer.setStyle({ fill: '#ffffff' }))
 
         this.colorsturn = this.add.text(870, 190, '', { fontSize: 'bold 30px', color: 'yellow' })
 
@@ -711,8 +629,7 @@ export default class Game extends Phaser.Scene {
 
 
         this.input.on('dragstart', function (pointer, gameObject) {
-            console.log('dragstart', self.playertoken)
-            if (checkturn()){
+            //console.log('dragstart', self.playertoken)
                 if (gameObject.type === "Sprite") {
                     self.markerText.setText('')
                     self.markerText = self.add.text(gameObject.x - 16, gameObject.y - 22, '*', { color: 'white', fontSize: 'bold 55px' }).setInteractive()
@@ -721,25 +638,20 @@ export default class Game extends Phaser.Scene {
                 } else {
                     this.children.bringToTop(gameObject)
                 }
-            }
-
         }, this)
 
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
             console.log('drag',gameObject.type)
-            if (checkturn()){
                 gameObject.x = dragX;
                 gameObject.y = dragY;
                 if (gameObject.type === "Sprite") {
                     sendcompletedUpdate()
                 }
-            }
         })
 
         this.input.on('drop', function (pointer, gameObject, dropZone) {
-            console.log('gameobject', self.playertoken,self.playerordertoken)
+            //console.log('gameobject', self.playertoken,self.playerordertoken)
             // Check to see if marble is dropped in the dropZone
-            if (checkturn()){
                  if (gameObject.type === "Image") {
                     gameObject.x = dropZone.x
                     gameObject.y = dropZone.y
@@ -747,12 +659,10 @@ export default class Game extends Phaser.Scene {
                     self.socket.emit('cardPlayedclient', gameObject)
                     gameObject.destroy() // If card in dropZone not destroyed we get two cards being played in dropZone
                 }
-            }
         })
 
         this.input.on('dragend', function (pointer, gameObject, dropped) {
             //  console.log('gameobject', gameObject)
-            if (checkturn()){
                 self.badMove = false
                 if (!dropped && gameObject.type === "Image") {
                     if (self.isPlayerA) {
@@ -794,7 +704,6 @@ export default class Game extends Phaser.Scene {
                         sendcompletedUpdate()
                     }
                 }
-            }
 
         })
 
@@ -809,19 +718,6 @@ export default class Game extends Phaser.Scene {
             }
         })
         // ----- FUNCTION SECTION --------
-
-        //** Determine who can move their marble when appropriate */
-        function checkturn(){
-            if ((self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "A") || 
-            (self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "D") ||
-            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "B") || 
-            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "C") ||
-            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "C") || 
-            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "B") ||
-            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "D") || 
-            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "A"))  {
-                return true} else {return false}
-        }
 
         //** Checks to see if home is full of not */
         function homefull(x1, x2, x3, x4, x5, Home) {
