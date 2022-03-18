@@ -12,7 +12,7 @@ export default class Game extends Phaser.Scene {
 
         //**  note playing cards are preloaded in title scene   */
         
-        this.load.image('background', 'src/images/bluebackground.jpg')
+        this.load.image('background', 'src/images/sand.jpg')
         this.load.image('joker_sign', 'src/images/joker.png')
         this.load.atlas('sphere', 'src/images/marbles.png', 'src/images/marbles.json')
 
@@ -442,6 +442,30 @@ export default class Game extends Phaser.Scene {
 
             right1.x = 100, right1.y = 450, right2.x = 140, right2.y = 450, right3.x = 180, right3.y = 450, right4.x = 140, right4.y = 490, right5.x = 140, right5.y = 410
 
+            self.children.bringToTop(top1)
+            self.children.bringToTop(top2)
+            self.children.bringToTop(top3)
+            self.children.bringToTop(top4)
+            self.children.bringToTop(top5)
+
+            self.children.bringToTop(left1)
+            self.children.bringToTop(left2)
+            self.children.bringToTop(left3)
+            self.children.bringToTop(left4)
+            self.children.bringToTop(left5)
+
+            self.children.bringToTop(right1)
+            self.children.bringToTop(right2)
+            self.children.bringToTop(right3)
+            self.children.bringToTop(right4)
+            self.children.bringToTop(right5)
+
+            self.children.bringToTop(bottom1)
+            self.children.bringToTop(bottom2)
+            self.children.bringToTop(bottom3)
+            self.children.bringToTop(bottom4)
+            self.children.bringToTop(bottom5)
+
             // Deal new hands to players
 
             self.socket.emit('dealCardsclient')
@@ -688,14 +712,7 @@ export default class Game extends Phaser.Scene {
 
         this.input.on('dragstart', function (pointer, gameObject) {
             console.log('dragstart', self.playertoken)
-            if ((self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "A") || 
-            (self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "D") ||
-            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "B") || 
-            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "C") ||
-            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "C") || 
-            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "B") ||
-            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "D") || 
-            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "A"))  {
+            if (checkturn()){
                 if (gameObject.type === "Sprite") {
                     self.markerText.setText('')
                     self.markerText = self.add.text(gameObject.x - 16, gameObject.y - 22, '*', { color: 'white', fontSize: 'bold 55px' }).setInteractive()
@@ -710,14 +727,7 @@ export default class Game extends Phaser.Scene {
 
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
             console.log('drag',gameObject.type)
-            if ((self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "A") || 
-            (self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "D") ||
-            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "B") || 
-            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "C") ||
-            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "C") || 
-            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "B") ||
-            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "D") || 
-            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "A"))  {
+            if (checkturn()){
                 gameObject.x = dragX;
                 gameObject.y = dragY;
                 if (gameObject.type === "Sprite") {
@@ -729,15 +739,8 @@ export default class Game extends Phaser.Scene {
         this.input.on('drop', function (pointer, gameObject, dropZone) {
             console.log('gameobject', self.playertoken,self.playerordertoken)
             // Check to see if marble is dropped in the dropZone
-            if ((self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "A") || 
-            (self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "D") ||
-            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "B") || 
-            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "C") ||
-            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "C") || 
-            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "B") ||
-            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "D") || 
-            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "A")) {
-                if (gameObject.type === "Image") {
+            if (checkturn()){
+                 if (gameObject.type === "Image") {
                     gameObject.x = dropZone.x
                     gameObject.y = dropZone.y
                     gameObject.input.enabled = false
@@ -749,14 +752,7 @@ export default class Game extends Phaser.Scene {
 
         this.input.on('dragend', function (pointer, gameObject, dropped) {
             //  console.log('gameobject', gameObject)
-            if ((self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "A") || 
-            (self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "D") ||
-            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "B") || 
-            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "C") ||
-            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "C") || 
-            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "B") ||
-            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "D") || 
-            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "A"))  {
+            if (checkturn()){
                 self.badMove = false
                 if (!dropped && gameObject.type === "Image") {
                     if (self.isPlayerA) {
@@ -814,6 +810,20 @@ export default class Game extends Phaser.Scene {
         })
         // ----- FUNCTION SECTION --------
 
+        //** Determine who can move their marble when appropriate */
+        function checkturn(){
+            if ((self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "A") || 
+            (self.isPlayerA && self.playertoken === "A" && self.playerordertoken === "D") ||
+            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "B") || 
+            (self.isPlayerB && self.playertoken === "B" && self.playerordertoken === "C") ||
+            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "C") || 
+            (self.isPlayerC && self.playertoken === "C" && self.playerordertoken === "B") ||
+            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "D") || 
+            (self.isPlayerD && self.playertoken === "D" && self.playerordertoken === "A"))  {
+                return true} else {return false}
+        }
+
+        //** Checks to see if home is full of not */
         function homefull(x1, x2, x3, x4, x5, Home) {
             let p1 = false
             let p2 = false
@@ -832,7 +842,7 @@ export default class Game extends Phaser.Scene {
             }
         }
 
-
+        //** Snaps game marble in place when dropped slight of the holw */
         function board(obj, lm) {
             // Game marble overlays blackdot Hole or Black Hole (aligns game marble with hole on the board)
             //console.log('--------board------', obj.frame.name, lm.frame.name,lm.x,lm.y)
@@ -903,6 +913,8 @@ export default class Game extends Phaser.Scene {
                 // Check to see if red home is occupied, if so move marble
                 if (rh_occupied_with_green) {
                     self.physics.world.overlap(self.topMarble, BottomHome, move_partners_Marble)
+                    self.physics.world.overlap(self.rightMarble, TopHome, move_opponets_Marble)
+                    self.physics.world.overlap(self.leftMarble, TopHome, move_opponets_Marble)
                 }
                 else if (rh_occupied_with_purple) {
                     self.physics.world.overlap(self.rightMarble, BottomHome, move_opponets_Marble)
@@ -979,12 +991,17 @@ export default class Game extends Phaser.Scene {
             else if (item.frame.name === "red" && group.frame.name === "green") {
                 // Check to see if green home is occupied, if so move marble
                 if (gh_occupied_with_red) {
+                    console.log('gh occupied with red marble')
                     self.physics.world.overlap(self.bottomMarble, TopHome, move_partners_Marble)
+                    self.physics.world.overlap(self.rightMarble, BottomHome, move_opponets_Marble)
+                    self.physics.world.overlap(self.leftMarble, BottomHome, move_opponets_Marble)
                 }
                 else if (gh_occupied_with_purple) {
+                    console.log('gh occupied with purple marble')
                     self.physics.world.overlap(self.rightMarble, TopHome, move_opponets_Marble)
                 }
                 else if (gh_occupied_with_yellow) {
+                    console.log('gh occupied with yellow marble')
                     self.physics.world.overlap(self.leftMarble, TopHome, move_opponets_Marble)
                 }
                 self.gameObject = group
@@ -1055,6 +1072,8 @@ export default class Game extends Phaser.Scene {
                 // Check to see if yellow home is occupied, if so move marble
                 if (oh_occupied_with_yellow) {
                     self.physics.world.overlap(self.rightMarble, LeftHome, move_partners_Marble)
+                    self.physics.world.overlap(self.topMarble, RightHome, move_opponets_Marble)
+                    self.physics.world.overlap(self.bottomMarble, RightHome, move_opponets_Marble)
                 }
                 else if (oh_occupied_with_green) {
                     self.physics.world.overlap(self.topMarble, LeftHome, move_opponets_Marble)
@@ -1134,6 +1153,8 @@ export default class Game extends Phaser.Scene {
                 // Check to see if purple home is occupied, if so move marble
                 if (yh_occupied_with_purple) {
                     self.physics.world.overlap(self.leftMarble, RightHome, move_partners_Marble)
+                    self.physics.world.overlap(self.topMarble, LeftHome, move_opponets_Marble)
+                    self.physics.world.overlap(self.bottomMarble, LeftHome, move_opponets_Marble)
                 }
                 else if (yh_occupied_with_green) {
                     self.physics.world.overlap(self.topMarble, RightHome, move_opponets_Marble)
