@@ -47,7 +47,7 @@ io.on('connection', async (socket) => {
 
         socket.on('moveCompletedclient', (t1x, t1y,t2x,t2y,t3x,t3y,t4x,t4y,t5x,t5y,
             l1x, l1y,l2x,l2y,l3x,l3y,l4x,l4y,l5x,l5y, b1x, b1y,b2x,b2y,b3x,b3y,b4x,b4y,b5x,b5y, r1x, r1y,r2x,r2y,r3x,r3y,r4x,r4y,r5x,r5y) => {
-            console.log('moveCompeted ', t1x, t1y)
+            //console.log('moveCompeted ', t1x, t1y)
             socket.to(room).volatile.emit('moveCompleted', t1x, t1y,t2x,t2y,t3x,t3y,t4x,t4y,t5x,t5y,
             l1x, l1y,l2x,l2y,l3x,l3y,l4x,l4y,l5x,l5y, b1x, b1y,b2x,b2y,b3x,b3y,b4x,b4y,b5x,b5y, r1x, r1y,r2x,r2y,r3x,r3y,r4x,r4y,r5x,r5y)
         })
@@ -56,11 +56,16 @@ io.on('connection', async (socket) => {
         socket.on('dealCardsclient', function () {
             // console.log('hands',hands)
             let hands = createHands()
-            io.in(room).volatile.emit('dealCards', hands) // to all clients in the same room
+            io.in(room).emit('dealCards', hands) // to all clients in the same room
+        })
+
+        socket.on('colormovedclient', function(color, previousPlayer){
+            console.log('colors: ', color, previousPlayer)
+            io.in(room).emit('colormoved', color,previousPlayer)
         })
 
         socket.on('cardPlayedclient', function (gameObject) {
-            io.in(room).volatile.emit('cardPlayed', gameObject)
+            io.in(room).emit('cardPlayed', gameObject)
         })
 
         socket.on('resetclient', function () {

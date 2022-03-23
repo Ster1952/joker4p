@@ -34,6 +34,7 @@ export default class Game extends Phaser.Scene {
         this.hand3 = []
         this.hand4 = []
         this.deck = []
+        this.previousPlayer
         //this.playertoken = 'A'
         //this.playerordertoken = "A"
         this.cardsPlayedFrames = []
@@ -513,9 +514,7 @@ export default class Game extends Phaser.Scene {
             bottom4.x = b4x, bottom4.y = b4y, bottom5.x = b5x, bottom5.y = b5y
             right1.x = r1x, right1.y = r1y, right2.x = r2x, right2.y = r2y, right3.x = r3x, right3.y = r3y
             right4.x = r4x, right4.y = r4y, right5.x = r5x, right5.y = r5y
-
         })
-
 
         self.socket.on('cardPlayed', function (gameObject) {
             //console.log('card played by other player', self.isPlayerA,self.isPlayerB,self.isPlayerC,self.isPlayerD)
@@ -574,6 +573,86 @@ export default class Game extends Phaser.Scene {
                 self.deck = Phaser.Utils.Array.Shuffle(self.cardsPlayedFrames)
                 self.cardsPlayedFrames = []
             }
+        })
+
+        self.socket.on('colormoved', function (colorplayed, colororder) {
+            console.log('colormoved',colorplayed,colororder)
+            let ghf = homefull(top1, top2, top3, top4, top5, self.topHome)
+            let yhf = homefull(right1, right2, right3, right4, right5, self.rightHome)
+            let rhf = homefull(bottom1, bottom2, bottom3, bottom4, bottom5, self.bottomHome)
+            let phf = homefull(left1, left2, left3, left4, left5, self.leftHome)
+            if (colororder == null){
+                self.previousPlayer = colorplayed
+                console.log('--------->>> ', self.previousPlayer)
+            } else {
+                self.previousPlayer = colorplayed
+            }
+            
+            if(colorplayed === 'green' && colororder === "yellow" && rhf){
+                self.colorsturn.text = "   Purple's move   "
+            }
+            else if(colorplayed === 'green' && colororder === "yellow" && phf){
+                self.colorsturn.text = "Purple's moving - Y"
+            }
+            else if (colorplayed === 'green' && colororder === "purple" && yhf){
+                self.colorsturn.text = "   Purple's move   "
+            } 
+            else if (colorplayed === 'green' && colororder === "purple" && rhf){
+                self.colorsturn.text = "   Yellow's move   "
+            } 
+            else if(colorplayed === 'green'){
+                self.colorsturn.text = "  Purple's move   "
+            }
+
+            else if(colorplayed === 'purple' && colororder === "red" && yhf){
+                self.colorsturn.text = "   Green's move   "
+            }
+            else if(colorplayed === 'purple' && colororder === "red" && ghf){
+                self.colorsturn.text = "    Red's move    "
+            }
+            else if(colorplayed === 'purple' && colororder === "green" && rhf){
+                self.colorsturn.text = " Red's moving - G "
+            }
+            else if(colorplayed === 'purple' && colororder === "green" && yhf){
+                self.colorsturn.text = "    Red's move    "
+            }
+            else if(colorplayed === 'purple'){
+                self.colorsturn.text = "    Red's move"
+            }
+
+            else if(colorplayed === 'red' && colororder === "yellow" && phf){
+                self.colorsturn.text = "   Yellow's move   "
+            }
+            else if(colorplayed === 'red' && colororder === "yellow" && ghf){
+                self.colorsturn.text = "   Purple's move   "
+            }
+
+            else if(colorplayed === 'red' && colororder === "purple" && ghf){
+                self.colorsturn.text = "   Yellow's move   "
+            }
+            else if(colorplayed === 'red' && colororder === "purple" && yhf){
+                self.colorsturn.text = "Yellow's moving - P"
+            }
+            else if(colorplayed === 'red'){
+                self.colorsturn.text = "  Yellow's move   "
+            }
+            
+            else if(colorplayed === 'yellow' && colororder === "green" && phf){
+                self.colorsturn.text = "    Red's move    "
+            }
+            else if(colorplayed === 'yellow' && colororder === "green" && rhf){
+                self.colorsturn.text = "   Green's move   "
+            }
+            else if(colorplayed === 'yellow' && colororder === "red" && ghf){
+                self.colorsturn.text = "Green's moving - R"
+            }
+            else if(colorplayed === 'yellow' && colororder === "red" && phf){
+                self.colorsturn.text = "   Green's move   "
+            }
+            else if(colorplayed === 'yellow'){
+                self.colorsturn.text = "   Green's move   "
+            }
+
         })
 
 
@@ -694,14 +773,20 @@ export default class Game extends Phaser.Scene {
                     self.physics.world.overlap(gameObject, self.rightMarble, yMarble)   // gameObject overlays Yellow marble
                     self.physics.world.overlap(gameObject, self.bottomMarble, rMarble)  // gameObject overlays Red marble
                     self.physics.world.overlap(gameObject, self.topMarble, gMarble)     // gameObject overlays Green marble
-
+                
                     //console.log('bad move flag', self.badMove)
                     if (!self.badMove) {
-
                         self.physics.world.overlap(gameObject, [self.gameBoard, self.topHome, self.bottomHome, self.leftHome, self.rightHome], board)
                         self.badMove = false
+                        console.log('previous player', self.previousPlayer)
+                
+                        self.socket.emit('colormovedclient', gameObject.frame.name,self.previousPlayer)
+                       // self.previousPlayer = gameObject.frame.name.slice()
+
+
                     } else {
                         sendcompletedUpdate()
+                    
                     }
                 }
 
@@ -731,7 +816,7 @@ export default class Game extends Phaser.Scene {
             p3 = self.physics.world.overlap(x3, Home)
             p4 = self.physics.world.overlap(x4, Home)
             p5 = self.physics.world.overlap(x5, Home)
-            if (p1, p2, p3, p4, p5) {
+            if (p1 && p2 && p3 && p4 && p5) {
                 return true
             } else {
                 return false
