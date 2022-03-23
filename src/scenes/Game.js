@@ -681,7 +681,7 @@ export default class Game extends Phaser.Scene {
             .on('pointerover', () => this.resetGame.setStyle({ fill: '#ff0000' }))
             .on('pointerout', () => this.resetGame.setStyle({ fill: '#ffffff' }))
 
-        this.colorsturn = this.add.text(870, 190, '', { fontSize: 'bold 30px', color: 'yellow' })
+        this.colorsturn = this.add.text(870, 190, '', { fontSize: 'bold 30px', color: 'black' })
 
         this.DealCardsButton = this.add.text(945, 200, 'Deal Cards', { fontSize: 'bold 24px' })
             .setPadding(7)
