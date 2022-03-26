@@ -1,10 +1,14 @@
 const express = require("express");
 const { createServer } = require("http");
-const { userInfo } = require("os");
 const { Server } = require("socket.io");
+const options = {
+    transports: ["websocket", "polling"],
+    pingTimeout: 30000,
+    pingInterval: 35000,
+    cookie: false}
 const app = express();
 const httpServer = createServer(app)
-const io = new Server(httpServer);
+const io = new Server(httpServer, options);
 
 app.use(express.static(__dirname + '/'));
 app.get('/', function (req, res) {
@@ -19,19 +23,12 @@ io.on('connection', async (socket) => {
     console.log('A user connected: ' + socket.id);
 
     socket.on('roominfo', (room, playersrealname) => {
-        
+        socket.join(room)
         rooms.push({ gameName: room, connectionID: socket.id, player: playersrealname })
         console.log('users that are connected',rooms)
-        socket.join(room)
-        let ctr = 0
-
-        for (let i = 0; i < rooms.length; i++) {
-            if (rooms[i].gameName === room) {
-                ctr++
-            }
-        }
-
-        if (ctr > 4) {
+        const clients = socket.adapter.rooms.get(room);
+        const numClients = clients ? clients.size : 0;
+        if (numClients > 4){
             io.to(socket.id).emit('playerWarning')
         }
 
@@ -59,9 +56,9 @@ io.on('connection', async (socket) => {
             io.in(room).emit('dealCards', hands) // to all clients in the same room
         })
 
-        socket.on('colormovedclient', function(color, previousPlayer){
-            console.log('colors: ', color, previousPlayer)
-            io.in(room).emit('colormoved', color,previousPlayer)
+        socket.on('colormovedclient', function(color){
+            console.log('colors: ', color)
+            io.in(room).emit('colormoved', color)
         })
 
         socket.on('cardPlayedclient', function (gameObject) {
@@ -72,8 +69,8 @@ io.on('connection', async (socket) => {
             io.to(room).emit('reset')
         })
 
-        socket.on('sync_client', function(h1,h2,h3,h4,deck,cardsPlayedFrames,pt,ot){
-            socket.in(room).emit('syncBoard', h1,h2,h3,h4,deck,cardsPlayedFrames,pt,ot)
+        socket.on('sync_client', function(h1,h2,h3,h4,deck,cardsPlayedFrames){
+            socket.in(room).emit('syncBoard', h1,h2,h3,h4,deck,cardsPlayedFrames)
         })
         
 
