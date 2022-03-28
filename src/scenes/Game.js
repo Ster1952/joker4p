@@ -228,27 +228,27 @@ export default class Game extends Phaser.Scene {
 
 
         // Left Marbles
-        let left1 = this.leftMarble.create(710, 370, 'sphere', 'purple')
+        let left1 = this.leftMarble.create(710, 370, 'sphere', 'blue')
             .setInteractive({ useHandCursor: true, draggable: true })
             .setCircle(16)
             .setData({ name: 'left1', X: 710, Y: 370, homeX: 770, homeY: 170 })
             .setCollideWorldBounds(true)
-        let left2 = this.leftMarble.create(670, 370, 'sphere', 'purple')
+        let left2 = this.leftMarble.create(670, 370, 'sphere', 'blue')
             .setInteractive({ useHandCursor: true, draggable: true })
             .setCircle(16)
             .setData({ name: 'left4', X: 670, Y: 370, homeX: 770, homeY: 170 })
             .setCollideWorldBounds(true)
-        let left3 = this.leftMarble.create(630, 370, 'sphere', 'purple')
+        let left3 = this.leftMarble.create(630, 370, 'sphere', 'blue')
             .setInteractive({ useHandCursor: true, draggable: true })
             .setCircle(16)
             .setData({ name: 'left3', X: 630, Y: 370, homeX: 770, homeY: 170 })
             .setCollideWorldBounds(true)
-        let left4 = this.leftMarble.create(670, 330, 'sphere', 'purple')
+        let left4 = this.leftMarble.create(670, 330, 'sphere', 'blue')
             .setInteractive({ useHandCursor: true, draggable: true })
             .setCircle(16)
             .setData({ name: 'left4', X: 670, Y: 330, homeX: 770, homeY: 170 })
             .setCollideWorldBounds(true)
-        let left5 = this.leftMarble.create(670, 410, 'sphere', 'purple')
+        let left5 = this.leftMarble.create(670, 410, 'sphere', 'blue')
             .setInteractive({ useHandCursor: true, draggable: true })
             .setCircle(16)
             .setData({ name: 'left5', X: 670, Y: 410, homeX: 770, homeY: 170 })
@@ -581,19 +581,19 @@ export default class Game extends Phaser.Scene {
            
             self.previousPlayer = colorplayed
             if (colorplayed === 'green' && phf){
-                self.colorsturn.text = "Purple's moving - Y"
+                self.colorsturn.text = "Blue's moving - Y"
             }
             else if (colorplayed === 'green') {
-                self.colorsturn.text = "   Purple's move   "
+                self.colorsturn.text = "    Blue's move    "
             }
-            else if (colorplayed === 'purple' && rhf) {
+            else if (colorplayed === 'blue' && rhf) {
                 self.colorsturn.text = " Red's moving - G "
             }
-            else if (colorplayed === 'purple') {
+            else if (colorplayed === 'blue') {
                 self.colorsturn.text = "    Red's move    "
             }
             else if (colorplayed === 'red' && yhf) {
-                self.colorsturn.text = "Yellow's moving - P"
+                self.colorsturn.text = "Yellow's moving - B"
             }
             else if (colorplayed === 'red') {
                 self.colorsturn.text = "   Yellow's move   "
@@ -719,7 +719,7 @@ export default class Game extends Phaser.Scene {
                 gameObject.y = gameObject.input.dragStartY
             } else {
 
-                self.physics.world.overlap(gameObject, self.leftMarble, oMarble)    // gameObject overlays Purple marble
+                self.physics.world.overlap(gameObject, self.leftMarble, oMarble)    // gameObject overlays Blue marble
                 self.physics.world.overlap(gameObject, self.rightMarble, yMarble)   // gameObject overlays Yellow marble
                 self.physics.world.overlap(gameObject, self.bottomMarble, rMarble)  // gameObject overlays Red marble
                 self.physics.world.overlap(gameObject, self.topMarble, gMarble)     // gameObject overlays Green marble
@@ -733,30 +733,30 @@ export default class Game extends Phaser.Scene {
                     let rhf = homefull(bottom1, bottom2, bottom3, bottom4, bottom5, self.bottomHome)
                     let phf = homefull(left1, left2, left3, left4, left5, self.leftHome)
             
-                    if (gameObject.frame.name === 'green' && rhf && phf && self.previousPlayer === 'purple') {
+                    if (gameObject.frame.name === 'green' && rhf && phf && self.previousPlayer === 'blue') {
                         var isColour = 'red';
                         self.socket.emit('colormovedclient',  isColour)
                     } else if (gameObject.frame.name === 'green' && rhf && self.previousPlayer === 'red') {
                         var isColour = 'red';
                         self.socket.emit('colormovedclient',  isColour)
-                    } else if (gameObject.frame.name === 'green' && rhf && self.previousPlayer === 'purple') {
+                    } else if (gameObject.frame.name === 'green' && rhf && self.previousPlayer === 'blue') {
                         var isColour = 'red';
                         self.socket.emit('colormovedclient',  isColour)
                     } else if (gameObject.frame.name === 'green' ) {
                         var isColour = 'green';
                         console.log('marlbe green')
                         self.socket.emit('colormovedclient',  isColour)
-                    } else if (gameObject.frame.name === 'purple' && yhf && rhf && self.previousPlayer === 'red') {
+                    } else if (gameObject.frame.name === 'blue' && yhf && rhf && self.previousPlayer === 'red') {
                         var isColour = 'yellow';
                         self.socket.emit('colormovedclient',  isColour)
-                    } else if (gameObject.frame.name === 'purple' && yhf && self.previousPlayer === 'yellow') {
+                    } else if (gameObject.frame.name === 'blue' && yhf && self.previousPlayer === 'yellow') {
                         var isColour = 'yellow';
                         self.socket.emit('colormovedclient',  isColour)
-                    } else if (gameObject.frame.name === 'purple' && yhf && self.previousPlayer === 'red') {
+                    } else if (gameObject.frame.name === 'blue' && yhf && self.previousPlayer === 'red') {
                         var isColour = 'yellow';
                         self.socket.emit('colormovedclient',  isColour)
-                    } else if (gameObject.frame.name === 'purple') {
-                        var isColour = 'purple';
+                    } else if (gameObject.frame.name === 'blue') {
+                        var isColour = 'blue';
                         self.socket.emit('colormovedclient',  isColour)
                     } else if (gameObject.frame.name === 'red' && ghf && yhf && self.previousPlayer === 'yellow') {
                         var isColour = 'green';
@@ -771,13 +771,13 @@ export default class Game extends Phaser.Scene {
                         var isColour = 'red';
                         self.socket.emit('colormovedclient',  isColour)
                     } else if (gameObject.frame.name === 'yellow' && phf && ghf && self.previousPlayer === 'green') {
-                        var isColour = 'purple';
+                        var isColour = 'blue';
                         self.socket.emit('colormovedclient',  isColour)
-                    } else if (gameObject.frame.name === 'yellow' && phf && self.previousPlayer === 'purple') {
-                        var isColour = 'purple';
+                    } else if (gameObject.frame.name === 'yellow' && phf && self.previousPlayer === 'blue') {
+                        var isColour = 'blue';
                         self.socket.emit('colormovedclient',  isColour)
                     } else if (gameObject.frame.name === 'yellow' && phf && self.previousPlayer === 'green') {
-                        var isColour = 'purple';
+                        var isColour = 'blue';
                         self.socket.emit('colormovedclient',  isColour)
                     } else if (gameObject.frame.name === 'yellow') {
                         var isColour = 'yellow';
@@ -831,7 +831,7 @@ export default class Game extends Phaser.Scene {
             // Game marble overlays blackdot Hole or Black Hole (aligns game marble with hole on the board)
             //console.log('--------board------', obj.frame.name, lm.frame.name,lm.x,lm.y)
 
-            if ((obj.frame.name === 'green' || obj.frame.name === 'red' || obj.frame.name === 'purple' || obj.frame.name === 'yellow') &&
+            if ((obj.frame.name === 'green' || obj.frame.name === 'red' || obj.frame.name === 'blue' || obj.frame.name === 'yellow') &&
                 (lm.frame.name === "blackdot" || lm.frame.name === "black")) {
                 self.gameObject = obj
                 self.children.bringToTop(self.gameObject)
@@ -852,7 +852,7 @@ export default class Game extends Phaser.Scene {
             let gh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, TopHome) // Green home is occupied with a red marble
             let gh_occupied_with_green = self.physics.world.overlap(self.topMarble, TopHome)  // Green home entrance is occupied with green marble
             let rh_occupied_with_yellow = self.physics.world.overlap(self.leftMarble, BottomHome) // Red home entrance is occupied with yellow marble
-            let rh_occupied_with_purple = self.physics.world.overlap(self.rightMarble, BottomHome)// Red home entrance is occupied with purple marble
+            let rh_occupied_with_blue = self.physics.world.overlap(self.rightMarble, BottomHome)// Red home entrance is occupied with blue marble
 
             //Invalid move - same colour overlaps same colour (move back to origin)
             if (item.frame.name === group.frame.name) {
@@ -900,7 +900,7 @@ export default class Game extends Phaser.Scene {
                     self.physics.world.overlap(self.rightMarble, TopHome, move_opponets_Marble)
                     self.physics.world.overlap(self.leftMarble, TopHome, move_opponets_Marble)
                 }
-                else if (rh_occupied_with_purple) {
+                else if (rh_occupied_with_blue) {
                     self.physics.world.overlap(self.rightMarble, BottomHome, move_opponets_Marble)
                 }
                 else if (rh_occupied_with_yellow) {
@@ -913,8 +913,8 @@ export default class Game extends Phaser.Scene {
                 self.badMove = false
 
             }
-            // Purple or Yellow overlays Red
-            else if ((item.frame.name === "purple" || item.frame.name === "yellow") && (group.frame.name === "red")) {
+            // Blue or Yellow overlays Red
+            else if ((item.frame.name === "blue" || item.frame.name === "yellow") && (group.frame.name === "red")) {
                 self.gameObject = group
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = group.data.values.X
@@ -932,7 +932,7 @@ export default class Game extends Phaser.Scene {
             let gh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, TopHome) // Green home is occupied with a red marble
             let rh_occupied_with_green = self.physics.world.overlap(self.topMarble, BottomHome) // Red home is ocuppied with a green marble
             let gh_occupied_with_green = self.physics.world.overlap(self.topMarble, TopHome)  // Green home entrance is occupied with green marble
-            let gh_occupied_with_purple = self.physics.world.overlap(self.rightMarble, TopHome) // Green home entrance is occupied by purple marble
+            let gh_occupied_with_blue = self.physics.world.overlap(self.rightMarble, TopHome) // Green home entrance is occupied by blue marble
             let gh_occupied_with_yellow = self.physics.world.overlap(self.leftMarble, TopHome) // Green home entrance is occupied by yellow marble
 
             //Invalid move - same colour overlaps same colour (move back to origin)
@@ -980,8 +980,8 @@ export default class Game extends Phaser.Scene {
                     self.physics.world.overlap(self.rightMarble, BottomHome, move_opponets_Marble)
                     self.physics.world.overlap(self.leftMarble, BottomHome, move_opponets_Marble)
                 }
-                else if (gh_occupied_with_purple) {
-                    console.log('gh occupied with purple marble')
+                else if (gh_occupied_with_blue) {
+                    console.log('gh occupied with blue marble')
                     self.physics.world.overlap(self.rightMarble, TopHome, move_opponets_Marble)
                 }
                 else if (gh_occupied_with_yellow) {
@@ -995,8 +995,8 @@ export default class Game extends Phaser.Scene {
                 self.badMove = false
             }
 
-            // Purple or Yellow overlays Green 
-            else if ((item.frame.name === "purple" || item.frame.name === "yellow") && (group.frame.name === "green")) {
+            // Blue or Yellow overlays Green 
+            else if ((item.frame.name === "blue" || item.frame.name === "yellow") && (group.frame.name === "green")) {
                 self.gameObject = group
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = group.data.values.X
@@ -1009,12 +1009,12 @@ export default class Game extends Phaser.Scene {
 
         function oMarble(item, group) {
             // console.log('---oMarble actived ---', item.frame.name, group.frame.name)
-            let oh_occupied_with_purple = self.physics.world.overlap(self.leftMarble, LeftHome)  //Purple home entrance is occupied with a purple marble
+            let oh_occupied_with_blue = self.physics.world.overlap(self.leftMarble, LeftHome)  //Blue home entrance is occupied with a blue marble
             let yh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, RightHome)  //Yellow home entrance is occupied with a yellow marble
-            let oh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, LeftHome) // Purple home is occuppied with a yellow marble
-            let yh_occupied_with_purple = self.physics.world.overlap(self.leftMarble, RightHome) // Yellow home is ocuppied with a purple marble 
-            let oh_occupied_with_green = self.physics.world.overlap(self.topMarble, LeftHome) // Purple home is ocuppied with a green marble 
-            let oh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, LeftHome) // Purple home is ocuppied with a green marble 
+            let oh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, LeftHome) // Blue home is occuppied with a yellow marble
+            let yh_occupied_with_blue = self.physics.world.overlap(self.leftMarble, RightHome) // Yellow home is ocuppied with a blue marble 
+            let oh_occupied_with_green = self.physics.world.overlap(self.topMarble, LeftHome) // Blue home is ocuppied with a green marble 
+            let oh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, LeftHome) // Blue home is ocuppied with a green marble 
 
             //Invalid move - same colour overlaps same colour (move back to origin)
             if (item.frame.name === group.frame.name) {
@@ -1025,34 +1025,34 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.y = item.input.dragStartY
                 self.badMove = true
             }
-            //Invalid move - can't move yellow marble onto purple marble as purple home entrance is already occupied with a purple marble
-            else if (item.frame.name === 'yellow' && oh_occupied_with_purple && group.frame.name === "purple") {
-                alert("INVALID MOVE - Purple Home entrance is occupied with a PURPLE Marble.")
+            //Invalid move - can't move yellow marble onto blue marble as blue home entrance is already occupied with a blue marble
+            else if (item.frame.name === 'yellow' && oh_occupied_with_blue && group.frame.name === "blue") {
+                alert("INVALID MOVE - Blue Home entrance is occupied with a BLUE Marble.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
                 self.gameObject.y = item.input.dragStartY
                 self.badMove = true
             }
-            else if (item.frame.name === 'yellow' && yh_occupied_with_purple && oh_occupied_with_yellow && group.frame.name === "purple") {
-                alert("INVALID MOVE - Yellow Home entrance is blocked as Yellow marble at Purple Home entrance is also block by Purple marble at the Yellow Home entrance.")
+            else if (item.frame.name === 'yellow' && yh_occupied_with_blue && oh_occupied_with_yellow && group.frame.name === "blue") {
+                alert("INVALID MOVE - Yellow Home entrance is blocked as Yellow marble at Blue Home entrance is also block by blue marble at the Yellow Home entrance.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
                 self.gameObject.y = item.input.dragStartY
                 self.badMove = true
             }
-            //Invalid move - can't move yellow marble onto purple marble as purple home entrance and yellow home are already occupied yellow marbles
-            else if (item.frame.name === 'yellow' && yh_occupied_with_yellow && oh_occupied_with_yellow && group.frame.name === "purple") {
-                alert("INVALID MOVE - Purple Home entrance and Yellow Home entrance are both occupied with Yellow Marbles.")
+            //Invalid move - can't move yellow marble onto blue marble as blue home entrance and yellow home are already occupied yellow marbles
+            else if (item.frame.name === 'yellow' && yh_occupied_with_yellow && oh_occupied_with_yellow && group.frame.name === "blue") {
+                alert("INVALID MOVE - Blue Home entrance and Yellow Home entrance are both occupied with Yellow Marbles.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
                 self.gameObject.y = item.input.dragStartY
                 self.badMove = true
             }
-            // Yellow overlays Partner's Purple ---> moves partner's purple home
-            else if (item.frame.name === "yellow" && group.frame.name === "purple") {
+            // Yellow overlays Partner's Blue ---> moves partner's blue home
+            else if (item.frame.name === "yellow" && group.frame.name === "blue") {
                 // Check to see if yellow home is occupied, if so move marble
                 if (oh_occupied_with_yellow) {
                     self.physics.world.overlap(self.rightMarble, LeftHome, move_partners_Marble)
@@ -1071,8 +1071,8 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.y = group.data.values.homeY
                 self.badMove = false
             }
-            //Green or Red overlays Purple
-            else if ((item.frame.name === "green" || item.frame.name === "red") && group.frame.name === "purple") {
+            //Green or Red overlays Blue
+            else if ((item.frame.name === "green" || item.frame.name === "red") && group.frame.name === "blue") {
                 // console.log('green or red active')
                 self.gameObject = group
                 self.children.bringToTop(self.gameObject)
@@ -1086,10 +1086,10 @@ export default class Game extends Phaser.Scene {
 
         function yMarble(item, group) {
             //console.log('---yMarble actived ---', item.frame.name, group.frame.name)
-            let oh_occupied_with_purple = self.physics.world.overlap(self.leftMarble, LeftHome)  //Purple home entrance is occupied with a  purple marble
+            let oh_occupied_with_blue = self.physics.world.overlap(self.leftMarble, LeftHome)  //Blue home entrance is occupied with a blue marble
             let yh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, RightHome)  //Yellow home entrance is occupied with a yellow marble
-            let oh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, LeftHome) // Purple home is occuppied with a yellow marble
-            let yh_occupied_with_purple = self.physics.world.overlap(self.leftMarble, RightHome) // Yellow home is ocuppied with a purple marble 
+            let oh_occupied_with_yellow = self.physics.world.overlap(self.rightMarble, LeftHome) // Blue home is occuppied with a yellow marble
+            let yh_occupied_with_blue = self.physics.world.overlap(self.leftMarble, RightHome) // Yellow home is ocuppied with a blue marble 
             let yh_occupied_with_green = self.physics.world.overlap(self.topMarble, RightHome)  // Yellow home is occupied with a green marble
             let yh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, RightHome)  // Yellow home is occupied with a red marble
 
@@ -1103,8 +1103,8 @@ export default class Game extends Phaser.Scene {
                 self.badMove = true
             }
 
-            //Invalid move - can't move purple marble onto yellow marble as yellow home entrance is already occupied with a yellow marble
-            else if (item.frame.name === 'purple' && yh_occupied_with_yellow && group.frame.name === "yellow") {
+            //Invalid move - can't move blue marble onto yellow marble as yellow home entrance is already occupied with a yellow marble
+            else if (item.frame.name === 'blue' && yh_occupied_with_yellow && group.frame.name === "yellow") {
                 alert("INVALID MOVE - Yellow Home entrance is occupied with a YELLOW Marble.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
@@ -1113,18 +1113,18 @@ export default class Game extends Phaser.Scene {
                 self.badMove = true
             }
 
-            //Invalid move - can't move purple marble onto yellow marble as yellow home entrance is occupied by red marble
-            else if (item.frame.name === 'purple' && yh_occupied_with_purple && oh_occupied_with_yellow && group.frame.name === "yellow") {
-                alert("INVALID MOVE - Purple Home entrance is blocked as the Purple marble at Yellow Home entrance is also block by Purple marble at the Purple Home entrance.")
+            //Invalid move - can't move blue marble onto yellow marble as yellow home entrance is occupied by red marble
+            else if (item.frame.name === 'blue' && yh_occupied_with_blue && oh_occupied_with_yellow && group.frame.name === "yellow") {
+                alert("INVALID MOVE - Blue Home entrance is blocked as the blue marble at Yellow Home entrance is also block by blue marble at the Blue Home entrance.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
                 self.gameObject.y = item.input.dragStartY
                 self.badMove = true
             }
-            //Invalid move - can't move purple marble onto yellow marble as purple home entrance and yellow home are already occupied by purple marbles
-            else if (item.frame.name === 'purple' && yh_occupied_with_purple && oh_occupied_with_purple && group.frame.name === "yellow") {
-                alert("INVALID MOVE - Purple Home entrance and Yellow Home entrance are both occupied with Purple Marbles.")
+            //Invalid move - can't move blue marble onto yellow marble as blue home entrance and yellow home are already occupied by blue marbles
+            else if (item.frame.name === 'blue' && yh_occupied_with_blue && oh_occupied_with_blue && group.frame.name === "yellow") {
+                alert("INVALID MOVE - Blue Home entrance and Yellow Home entrance are both occupied with Blue Marble.")
                 self.gameObject = item
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = item.input.dragStartX
@@ -1132,10 +1132,10 @@ export default class Game extends Phaser.Scene {
                 self.badMove = true
             }
 
-            // Purple overlays Partner's Yellow  ---> movers partner's yellow homw
-            else if (item.frame.name === "purple" && group.frame.name === "yellow") {
-                // Check to see if purple home is occupied, if so move marble
-                if (yh_occupied_with_purple) {
+            // Blue overlays Partner's Yellow  ---> movers partner's yellow homw
+            else if (item.frame.name === "blue" && group.frame.name === "yellow") {
+                // Check to see if blue home is occupied, if so move marble
+                if (yh_occupied_with_blue) {
                     self.physics.world.overlap(self.leftMarble, RightHome, move_partners_Marble)
                     self.physics.world.overlap(self.topMarble, LeftHome, move_opponets_Marble)
                     self.physics.world.overlap(self.bottomMarble, LeftHome, move_opponets_Marble)
