@@ -318,7 +318,7 @@ export default class Game extends Phaser.Scene {
 
         // CONNECTION TO SERVER ESTABLISHED
 
-        this.socket = io();
+        this.socket = io({"forceWebsockets": true});
 
         while (waiting) {
             this.player_no = prompt("Please enter a player number (1,2,3,or 4).")
