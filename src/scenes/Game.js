@@ -655,7 +655,7 @@ export default class Game extends Phaser.Scene {
             } else {
                 return false
             }
-        })
+        }, this)
 
 
         this.input.on('dragstart', function (pointer, gameObject) {
@@ -676,7 +676,7 @@ export default class Game extends Phaser.Scene {
             if (gameObject.type === "Sprite") {
                 sendcompletedUpdate()
             }
-        })
+        }, this)
 
         this.input.on('drop', function (pointer, gameObject, dropZone) {
         
@@ -688,7 +688,7 @@ export default class Game extends Phaser.Scene {
                 self.socket.emit('cardPlayedclient', gameObject)
                 gameObject.destroy() // If card in dropZone not destroyed we get two cards being played in dropZone
             }
-        })
+        }, this)
 
         this.input.on('dragend', function (pointer, gameObject, dropped) {
             //  console.log('gameobject', gameObject)
@@ -793,18 +793,18 @@ export default class Game extends Phaser.Scene {
                 }
             }
 
-        })
+        }, this)
 
         this.input.on('gameobjectover', function (pointer, gameObject) {
             if (gameObject.type === "Image") {
                 gameObject.setTint(0x7878ff)
             }
-        })
+        }, this)
         this.input.on('gameobjectout', function (pointer, gameObject) {
             if (gameObject.type === "Image") {
                 gameObject.clearTint()
             }
-        })
+        }, this)
         // ----- FUNCTION SECTION --------
 
         //** Checks to see if home is full of not */
