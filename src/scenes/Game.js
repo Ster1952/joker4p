@@ -470,7 +470,8 @@ export default class Game extends Phaser.Scene {
             self.socket.emit('dealCardsclient')
         })
 
-        self.socket.on('syncBoard', function (h1, h2, h3, h4, deck, cardsPlayedFrames) {
+        self.socket.on('syncBoard', function (h1, h2, h3, h4, deck, cardsPlayedFrames, t1x, t1y,t2x,t2y,t3x,t3y,t4x,t4y,t5x,t5y,
+            l1x, l1y,l2x,l2y,l3x,l3y,l4x,l4y,l5x,l5y, b1x, b1y,b2x,b2y,b3x,b3y,b4x,b4y,b5x,b5y, r1x, r1y,r2x,r2y,r3x,r3y,r4x,r4y,r5x,r5y) {
             self.DealCardsButton.setText('')
             self.DealCardsButton.disableInteractive()
             self.DealCardsButton.setStyle({ backgroundColor: ' ' })
@@ -491,6 +492,14 @@ export default class Game extends Phaser.Scene {
                 obj.disableInteractive()
             }
 
+            top1.x = t1x, top1.y = t1y, top2.x = t2x, top2.y = t2y, top3.x = t3x, top3.y = t3y, top4.x = t4x, top4.y = t4y, top5.x = t5x, top5.y = t5y
+
+            left1.x = l1x, left1.y = l1y, left2.x = l2x, left2.y = l2y, left3.x = l3x, left3.y = l3y, left4.x = l4x, left4.y = l4y, left5.x = l5x, left5.y = l5y
+
+            bottom1.x = b1x, bottom1.y = b1y, bottom2.x = b2x, bottom2.y = b2y, bottom3.x = b3x, bottom3.y = b3y, bottom4.x = b4x, bottom4.y = b4y, bottom5.x = b5x, bottom5.y = b5y
+
+            right1.x = r1x, right1.y = r1y, right2.x = r2x, right2.y = r2y, right3.x = r3x, right3.y = r3y, right4.x = r4x, right4.y = r4y, right5.x = r5x, right5.y = r5y
+
         })
 
         self.socket.on('marker', function (posX, posY) {
@@ -498,21 +507,75 @@ export default class Game extends Phaser.Scene {
             self.markerText = self.add.text(posX - 16, posY - 22, '*', { color: 'white', fontSize: 'bold 55px' }).setInteractive()
         })
 
-
-        self.socket.on('moveCompleted', (t1x, t1y, t2x, t2y, t3x, t3y, t4x, t4y, t5x, t5y,
-            l1x, l1y, l2x, l2y, l3x, l3y, l4x, l4y, l5x, l5y, b1x, b1y, b2x, b2y, b3x, b3y,
-            b4x, b4y, b5x, b5y, r1x, r1y, r2x, r2y, r3x, r3y, r4x, r4y, r5x, r5y) => {
-
-            //represents all marbles in play
-            top1.x = t1x, top1.y = t1y, top2.x = t2x, top2.y = t2y, top3.x = t3x, top3.y = t3y
-            top4.x = t4x, top4.y = t4y, top5.x = t5x, top5.y = t5y
-            left1.x = l1x, left1.y = l1y, left2.x = l2x, left2.y = l2y, left3.x = l3x, left3.y = l3y
-            left4.x = l4x, left4.y = l4y, left5.x = l5x, left5.y = l5y
-            bottom1.x = b1x, bottom1.y = b1y, bottom2.x = b2x, bottom2.y = b2y, bottom3.x = b3x, bottom3.y = b3y
-            bottom4.x = b4x, bottom4.y = b4y, bottom5.x = b5x, bottom5.y = b5y
-            right1.x = r1x, right1.y = r1y, right2.x = r2x, right2.y = r2y, right3.x = r3x, right3.y = r3y
-            right4.x = r4x, right4.y = r4y, right5.x = r5x, right5.y = r5y
+        self.socket.on('moveCompleted', function (data){
+            console.log('--- move completed ---', data.name, data.dragX, data.dragY )
+            if (data.name === 'left1'){
+                self.gameObject = left1
+            }
+            else if (data.name === 'left2'){
+                self.gameObject = left2
+            }
+            else if (data.name === 'left3'){
+                self.gameObject = left3
+            }
+            else if (data.name === 'left4'){
+                self.gameObject = left4
+            }
+            else if (data.name === 'left5'){
+                self.gameObject = left5
+            }
+            else if (data.name === 'right1'){
+                self.gameObject = right1
+            }
+            else if (data.name === 'right2'){
+                self.gameObject = right2
+            }
+            else if (data.name === 'right3'){
+                self.gameObject = right3
+            }
+            else if (data.name === 'right4'){
+                self.gameObject = right4
+            }
+            else if (data.name === 'right5'){
+                self.gameObject = right5
+            }
+            else if (data.name === 'top1'){
+                self.gameObject = top1
+            }
+            else if (data.name === 'top2'){
+                self.gameObject = top2
+            }
+            else if (data.name === 'top3'){
+                self.gameObject = top3
+            }
+            else if (data.name === 'top4'){
+                self.gameObject = top4
+            }
+            else if (data.name === 'top5'){
+                self.gameObject = top5
+            }
+            else if (data.name === 'bottom1'){
+                self.gameObject = bottom1
+            }
+            else if (data.name === 'bottom2'){
+                self.gameObject = bottom2
+            }
+            else if (data.name === 'bottom3'){
+                self.gameObject = bottom3
+            }
+            else if (data.name === 'bottom4'){
+                self.gameObject = bottom4
+            }
+            else if (data.name === 'bottom5'){
+                self.gameObject = bottom5
+            }
+            self.children.bringToTop(self.gameObject)
+            self.gameObject.x = data.dragX
+            self.gameObject.y = data.dragY
         })
+
+
+      
 
         self.socket.on('cardPlayed', function (gameObject) {
             //console.log('card played by other player', self.isPlayerA,self.isPlayerB,self.isPlayerC,self.isPlayerD)
@@ -650,8 +713,52 @@ export default class Game extends Phaser.Scene {
         this.syncGame.on('pointerdown', function () {
             let resyncboard = confirm("Press the OK button if you wish to help a missing player recover their game data. Note the missing player should not use this feature.")
             if (resyncboard === true) {
-                sendcompletedUpdate()
-                self.socket.emit('sync_client', self.hand1, self.hand2, self.hand3, self.hand4, self.deck, self.cardsPlayedFrames)
+            let t1x = top1.x
+            let t1y = top1.y
+            let t2x = top2.x
+            let t2y = top2.y
+            let t3x = top3.x
+            let t3y = top3.y
+            let t4x = top4.x
+            let t4y = top4.y
+            let t5x = top5.x
+            let t5y = top5.y
+
+            let l1x = left1.x
+            let l1y = left1.y
+            let l2x = left2.x
+            let l2y = left2.y
+            let l3x = left3.x
+            let l3y = left3.y
+            let l4x = left4.x
+            let l4y = left4.y
+            let l5x = left5.x
+            let l5y = left5.y
+
+            let b1x = bottom1.x
+            let b1y = bottom1.y
+            let b2x = bottom2.x
+            let b2y = bottom2.y
+            let b3x = bottom3.x
+            let b3y = bottom3.y
+            let b4x = bottom4.x
+            let b4y = bottom4.y
+            let b5x = bottom5.x
+            let b5y = bottom5.y
+
+            let r1x = right1.x
+            let r1y = right1.y
+            let r2x = right2.x
+            let r2y = right2.y
+            let r3x = right3.x
+            let r3y = right3.y
+            let r4x = right4.x
+            let r4y = right4.y
+            let r5x = right5.x
+            let r5y = right5.y
+                              
+                self.socket.emit('sync_client', self.hand1, self.hand2, self.hand3, self.hand4, self.deck, self.cardsPlayedFrames, t1x, t1y,t2x,t2y,t3x,t3y,t4x,t4y,t5x,t5y,
+                l1x, l1y,l2x,l2y,l3x,l3y,l4x,l4y,l5x,l5y, b1x, b1y,b2x,b2y,b3x,b3y,b4x,b4y,b5x,b5y, r1x, r1y,r2x,r2y,r3x,r3y,r4x,r4y,r5x,r5y)
             } else {
                 return false
             }
@@ -674,7 +781,8 @@ export default class Game extends Phaser.Scene {
             gameObject.x = dragX;
             gameObject.y = dragY;
             if (gameObject.type === "Sprite") {
-                sendcompletedUpdate()
+                let data = { name: gameObject.data.list.name, dragX: gameObject.x, dragY: gameObject.y }
+                self.socket.emit('moveCompletedclient', data)
             }
         }, this)
 
@@ -788,7 +896,8 @@ export default class Game extends Phaser.Scene {
         
 
                 } else {
-                    sendcompletedUpdate()
+                   let data = { name: gameObject.data.list.name, dragX: gameObject.x, dragY: gameObject.y }
+                   self.socket.emit('moveCompletedclient', data)
 
                 }
             }
@@ -837,8 +946,8 @@ export default class Game extends Phaser.Scene {
                 self.children.bringToTop(self.gameObject)
                 self.gameObject.x = lm.x
                 self.gameObject.y = lm.y
-
-                sendcompletedUpdate()
+                let data = { name: obj.data.list.name, dragX: obj.x, dragY: obj.y }
+                self.socket.emit('moveCompletedclient', data)
             }
 
         }
@@ -1173,12 +1282,6 @@ export default class Game extends Phaser.Scene {
             group.y = group.data.values.Y
         }
 
-        function sendcompletedUpdate() {
-            self.socket.emit('moveCompletedclient', top1.x, top1.y, top2.x, top2.y, top3.x, top3.y, top4.x, top4.y, top5.x, top5.y,
-                left1.x, left1.y, left2.x, left2.y, left3.x, left3.y, left4.x, left4.y, left5.x, left5.y,
-                bottom1.x, bottom1.y, bottom2.x, bottom2.y, bottom3.x, bottom3.y, bottom4.x, bottom4.y, bottom5.x, bottom5.y,
-                right1.x, right1.y, right2.x, right2.y, right3.x, right3.y, right4.x, right4.y, right5.x, right5.y)
-        }
 
     }
     update() {
