@@ -43,7 +43,7 @@ io.on('connection', async (socket) => {
         })
 
         socket.on('moveCompletedclient', (data) => {
-            socket.to(room).volatile.emit('moveCompleted', data)
+            socket.to(room).emit('moveCompleted', data)
         })
 
         socket.on('dealCardsclient', function () {
