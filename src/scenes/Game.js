@@ -236,7 +236,7 @@ export default class Game extends Phaser.Scene {
         let left2 = this.leftMarble.create(670, 370, 'sphere', 'blue')
             .setInteractive({ useHandCursor: true, draggable: true })
             .setCircle(16)
-            .setData({ name: 'left4', X: 670, Y: 370, homeX: 770, homeY: 170 })
+            .setData({ name: 'left2', X: 670, Y: 370, homeX: 770, homeY: 170 })
             .setCollideWorldBounds(true)
         let left3 = this.leftMarble.create(630, 370, 'sphere', 'blue')
             .setInteractive({ useHandCursor: true, draggable: true })
@@ -509,6 +509,7 @@ export default class Game extends Phaser.Scene {
 
         self.socket.on('moveCompleted', function (data){
             console.log('--- move completed ---', data.name, data.dragX, data.dragY )
+
             if (data.name === 'left1'){
                 self.gameObject = left1
             }
