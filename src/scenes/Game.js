@@ -574,7 +574,15 @@ export default class Game extends Phaser.Scene {
             self.gameObject.y = data.dragY
         })
 
-
+        self.socket.on('winners', function(data){
+            if (data === 'yb'){
+                self.scene.switch('YB_winner')  
+            }
+            else if (data === 'gr'){
+                self.scene.switch('GR_winner')
+            }
+        
+        })
       
 
         self.socket.on('cardPlayed', function (gameObject) {
@@ -640,10 +648,10 @@ export default class Game extends Phaser.Scene {
             let ghf = homefull(top1, top2, top3, top4, top5, self.topHome)
             let yhf = homefull(right1, right2, right3, right4, right5, self.rightHome)
             let rhf = homefull(bottom1, bottom2, bottom3, bottom4, bottom5, self.bottomHome)
-            let phf = homefull(left1, left2, left3, left4, left5, self.leftHome)
+            let bhf = homefull(left1, left2, left3, left4, left5, self.leftHome)
            
             self.previousPlayer = colorplayed
-            if (colorplayed === 'green' && phf){
+            if (colorplayed === 'green' && bhf){
                 self.colorsturn.text = "Blue's moving - Y"
             }
             else if (colorplayed === 'green') {
@@ -839,9 +847,18 @@ export default class Game extends Phaser.Scene {
                     let ghf = homefull(top1, top2, top3, top4, top5, self.topHome)
                     let yhf = homefull(right1, right2, right3, right4, right5, self.rightHome)
                     let rhf = homefull(bottom1, bottom2, bottom3, bottom4, bottom5, self.bottomHome)
-                    let phf = homefull(left1, left2, left3, left4, left5, self.leftHome)
+                    let bhf = homefull(left1, left2, left3, left4, left5, self.leftHome)
             
-                    if (gameObject.frame.name === 'green' && rhf && phf && self.previousPlayer === 'blue') {
+                    if (ghf && rhf){
+                        let winner = 'gr'
+                        self.socket.emit('winner', winner)
+                    }
+                    if (yhf && bhf){
+                        let winner = 'yb'
+                        self.socket.emit('winner', winner)
+                    }
+
+                    if (gameObject.frame.name === 'green' && rhf && bhf && self.previousPlayer === 'blue') {
                         var isColour = 'red';
                         self.socket.emit('colormovedclient',  isColour)
                     } else if (gameObject.frame.name === 'green' && rhf && self.previousPlayer === 'red') {
@@ -878,13 +895,13 @@ export default class Game extends Phaser.Scene {
                     } else if (gameObject.frame.name === 'red') {
                         var isColour = 'red';
                         self.socket.emit('colormovedclient',  isColour)
-                    } else if (gameObject.frame.name === 'yellow' && phf && ghf && self.previousPlayer === 'green') {
+                    } else if (gameObject.frame.name === 'yellow' && bhf && ghf && self.previousPlayer === 'green') {
                         var isColour = 'blue';
                         self.socket.emit('colormovedclient',  isColour)
-                    } else if (gameObject.frame.name === 'yellow' && phf && self.previousPlayer === 'blue') {
+                    } else if (gameObject.frame.name === 'yellow' && bhf && self.previousPlayer === 'blue') {
                         var isColour = 'blue';
                         self.socket.emit('colormovedclient',  isColour)
-                    } else if (gameObject.frame.name === 'yellow' && phf && self.previousPlayer === 'green') {
+                    } else if (gameObject.frame.name === 'yellow' && bhf && self.previousPlayer === 'green') {
                         var isColour = 'blue';
                         self.socket.emit('colormovedclient',  isColour)
                     } else if (gameObject.frame.name === 'yellow') {

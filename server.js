@@ -46,6 +46,11 @@ io.on('connection', async (socket) => {
             socket.to(room).emit('moveCompleted', data)
         })
 
+        socket.on('winner', (data) => {
+            console.log('winner',data)
+            io.in(room).emit('winners', data)
+        })
+
         socket.on('dealCardsclient', function () {
             // console.log('hands',hands)
             let hands = createHands()
