@@ -43,6 +43,7 @@ io.on('connection', async (socket) => {
         })
 
         socket.on('moveCompletedclient', (data) => {
+            
             socket.to(room).emit('moveCompleted', data)
         })
 

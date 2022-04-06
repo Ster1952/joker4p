@@ -573,6 +573,7 @@ export default class Game extends Phaser.Scene {
             self.children.bringToTop(self.gameObject)
             self.gameObject.x = data.dragX
             self.gameObject.y = data.dragY
+            
         })
 
         self.socket.on('winners', function(data){
@@ -1038,6 +1039,8 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.x = group.data.values.homeX
                 self.gameObject.y = group.data.values.homeY
                 self.badMove = false
+                let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
+                self.socket.emit('moveCompletedclient', data)
 
             }
             // Blue or Yellow overlays Red
@@ -1047,6 +1050,8 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.x = group.data.values.X
                 self.gameObject.y = group.data.values.Y
                 self.badMove = false
+                let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
+                self.socket.emit('moveCompletedclient', data)
             }
             // Red overlays Green
 
@@ -1120,6 +1125,8 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.x = group.data.values.homeX
                 self.gameObject.y = group.data.values.homeY
                 self.badMove = false
+                let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
+                self.socket.emit('moveCompletedclient', data)
             }
 
             // Blue or Yellow overlays Green 
@@ -1129,6 +1136,8 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.x = group.data.values.X
                 self.gameObject.y = group.data.values.Y
                 self.badMove = false
+                let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
+                self.socket.emit('moveCompletedclient', data)
             }
 
             //
@@ -1143,6 +1152,7 @@ export default class Game extends Phaser.Scene {
             let oh_occupied_with_green = self.physics.world.overlap(self.topMarble, LeftHome) // Blue home is ocuppied with a green marble 
             let oh_occupied_with_red = self.physics.world.overlap(self.bottomMarble, LeftHome) // Blue home is ocuppied with a green marble 
 
+            
             //Invalid move - same colour overlaps same colour (move back to origin)
             if (item.frame.name === group.frame.name) {
                 // console.log('bad move found colour on colour', item.data.values.name, item.input.dragStartX)
@@ -1197,6 +1207,8 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.x = group.data.values.homeX
                 self.gameObject.y = group.data.values.homeY
                 self.badMove = false
+                let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
+                self.socket.emit('moveCompletedclient', data)
             }
             //Green or Red overlays Blue
             else if ((item.frame.name === "green" || item.frame.name === "red") && group.frame.name === "blue") {
@@ -1206,6 +1218,8 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.x = group.data.values.X
                 self.gameObject.y = group.data.values.Y
                 self.badMove = false
+                let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
+                self.socket.emit('moveCompletedclient', data)
             }
 
 
@@ -1278,6 +1292,9 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.x = group.data.values.homeX
                 self.gameObject.y = group.data.values.homeY
                 self.badMove = false
+                let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
+                self.socket.emit('moveCompletedclient', data)
+
             }
             //Green or Red overlays Yellow
             else if ((item.frame.name === "green" || item.frame.name === "red") && group.frame.name === "yellow") {
@@ -1286,18 +1303,26 @@ export default class Game extends Phaser.Scene {
                 self.gameObject.x = group.data.values.X
                 self.gameObject.y = group.data.values.Y
                 self.badMove = false
+                let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
+                self.socket.emit('moveCompletedclient', data)
             }
 
         }
 
         function move_partners_Marble(item, group) {
+            console.log('move partner marble ', group.data.list.name)
             group.x = group.data.values.homeX
             group.y = group.data.values.homeY
+            let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
+            self.socket.emit('moveCompletedclient', data)
         }
 
         function move_opponets_Marble(item, group) {
+            console.log('move opponets marble ', group.data.list.name)
             group.x = group.data.values.X
             group.y = group.data.values.Y
+            let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
+            self.socket.emit('moveCompletedclient', data)
         }
 
 
