@@ -316,6 +316,11 @@ export default class Game extends Phaser.Scene {
 
         console.log('tableID', tableID)
 
+        window.addEventListener('beforeunload', ev => {
+            ev.preventDefault()
+            ev.returnValue = ''
+        })
+
         // CONNECTION TO SERVER ESTABLISHED
 
         this.socket = io({"forceWebsockets": true});
@@ -327,15 +332,19 @@ export default class Game extends Phaser.Scene {
             }
             if (self.player_no === '1') {
                 self.isPlayerA = true
+                this.add.text(325,460, " You are GREEN",{font: "24px Arial", fill: "05ffa1"})
                 console.log('isPlayerA')
             } else if (self.player_no === '2') {
                 self.isPlayerB = true
+                this.add.text(325,460, "  You are BLUE",{font: "24px Arial", fill: "05ffa1"})
                 console.log('isPlayerB')
             } else if (self.player_no === '3') {
                 self.isPlayerC = true
+                this.add.text(325,460, "   You are RED",{font: "24px Arial", fill: "05ffa1"})
                 console.log('isPlayerC')
             } else if (self.player_no === '4') {
                 self.isPlayerD = true
+                this.add.text(325,460, " You are YELLOW",{font: "24px Arial", fill: "05ffa1"})
                 console.log('isPlayerD')
             }
         }
@@ -346,6 +355,7 @@ export default class Game extends Phaser.Scene {
 
         self.socket.on('disconnection_info', function (person, reason) {
             console.log('Player ' + person + ' disconnect because ' + reason)
+            self.errormsg.text = "Player " + person + " disconnected because " + reason
         })
 
         self.socket.on('playerWarning', function () {
@@ -407,6 +417,7 @@ export default class Game extends Phaser.Scene {
                 c4.fillColor = 0x00ff00
             } else {
                 c4.fillColor = 0x000000
+            
             }
         })
 
@@ -504,12 +515,12 @@ export default class Game extends Phaser.Scene {
 
         self.socket.on('marker', function (posX, posY) {
             self.markerText.setText('')
+            self.errormsg.setText('')
             self.markerText = self.add.text(posX - 16, posY - 22, '*', { color: 'white', fontSize: 'bold 55px' }).setInteractive()
         })
 
         self.socket.on('moveCompleted', function (data){
             console.log('--- move completed ---', data.name, data.dragX, data.dragY )
-
             if (data.name === 'left1'){
                 self.gameObject = left1
             }
@@ -698,7 +709,8 @@ export default class Game extends Phaser.Scene {
 
         // -------- LOCAL PLAYER SECTION -----------
 
-
+        this.errormsg = this.add.text(850, 500, '', {font: "18px Arial", fill: "05ffa1"})
+        //this.contestant = this.add.text(325,460, "",{font: "24px Arial", fill: "05ffa1"})
         this.resetGame = this.add.text(964, 40, 'New Game', { fontSize: 'bold 24px' })
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', () => self.socket.emit('resetclient'))
