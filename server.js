@@ -4,8 +4,8 @@ const { Server } = require("socket.io");
 const options = {
     transports: ["websocket"],
     allowUpgrades: false,
-    pingTimeout: 30000,
-    pingInterval: 35000,
+    pingInterval: 30000,
+    pingTimeout: 60000,
     cookie: false}
 const app = express();
 const httpServer = createServer(app)
