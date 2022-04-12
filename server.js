@@ -2,7 +2,8 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const options = {
-    transports: ["websocket", "polling"],
+    transports: ["websocket"],
+    allowUpgrades: false,
     pingTimeout: 30000,
     pingInterval: 35000,
     cookie: false}
