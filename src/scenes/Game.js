@@ -604,8 +604,9 @@ export default class Game extends Phaser.Scene {
         })
       
 
-        self.socket.on('cardPlayed', function (gameObject) {
-            //console.log('card played by other player', self.isPlayerA,self.isPlayerB,self.isPlayerC,self.isPlayerD)
+        self.socket.on('cardPlayed', function (gameObject,  playerA, playerB, playerC, playerD) {
+            console.log('card played by other player', self.isPlayerA,self.isPlayerB,self.isPlayerC,self.isPlayerD)
+            console.log('who player',  playerA, playerB, playerC, playerD)
             self.cardsPlayedFrames.push(gameObject.frameKey)
             //console.log('cards played remote player', gameObject.frameKey)
             let card = new Card(self)
@@ -613,36 +614,36 @@ export default class Game extends Phaser.Scene {
             obj.disableInteractive()
             self.cardsPlayedObjects.push(obj)
 
-            if (self.isPlayerA) {
+            if (self.isPlayerA && playerA) {
                 let index1 = self.hand1.indexOf(gameObject.frameKey);
-                // console.log('index 1 ==========', index1, gameObject.frameKey, self.hand1)
+                console.log('index 1 ==========', index1, gameObject.frameKey, self.hand1)
                 if (index1 !== -1) {
                     let card = new Card(self)
                     let deckcard1 = card.render(900 + (index1 * 50), 680, 'cards', self.deck[0]).setDepth(index1)
                     self.hand1.splice(index1, 1, deckcard1.frame.name)
                     self.playersHand.splice(index1, 1, deckcard1)
                 }
-            } else if (self.isPlayerB) {
+            } else if (self.isPlayerB && playerB) {
                 let index2 = self.hand2.indexOf(gameObject.frameKey);
-                //console.log('index 2 ==========', index2, gameObject.frameKey, self.hand2)
+                console.log('index 2 ==========', index2, gameObject.frameKey, self.hand2)
                 if (index2 !== -1) {
                     let card = new Card(self)
                     let deckcard2 = card.render(900 + (index2 * 50), 680, 'cards', self.deck[0]).setDepth(index2)
                     self.hand2.splice(index2, 1, deckcard2.frame.name)
                     self.playersHand.splice(index2, 1, deckcard2)
                 }
-            } else if (self.isPlayerC) {
+            } else if (self.isPlayerC && playerC) {
                 let index3 = self.hand3.indexOf(gameObject.frameKey);
-                //console.log('index 3 ==========', index3, gameObject.frameKey, self.hand3)
+                console.log('index 3 ==========', index3, gameObject.frameKey, self.hand3)
                 if (index3 !== -1) {
                     let card = new Card(self)
                     let deckcard3 = card.render(900 + (index3 * 50), 680, 'cards', self.deck[0]).setDepth(index3)
                     self.hand3.splice(index3, 1, deckcard3.frame.name)
                     self.playersHand.splice(index3, 1, deckcard3)
                 }
-            } else if (self.isPlayerD) {
+            } else if (self.isPlayerD && playerD) {
                 let index4 = self.hand4.indexOf(gameObject.frameKey);
-                // console.log('index 4 ==========', index4, gameObject.frameKey, self.hand4)
+                console.log('index 4 ==========', index4, gameObject.frameKey, self.hand4)
                 if (index4 !== -1) {
                     let card = new Card(self)
                     let deckcard4 = card.render(900 + (index4 * 50), 680, 'cards', self.deck[0]).setDepth(index4)
@@ -702,8 +703,9 @@ export default class Game extends Phaser.Scene {
             self.hand2 = hand[1]
             self.hand3 = hand[2]
             self.hand4 = hand[3]
-            self.playersHand = self.dealer.dealCards(hand)
             self.deck = hand[4]
+            self.playersHand = self.dealer.dealCards(hand)
+            
 
             // console.log('----  player hands ----', self.playersHand)
             self.DealCardsButton.setText('')
@@ -821,7 +823,7 @@ export default class Game extends Phaser.Scene {
                 gameObject.x = dropZone.x
                 gameObject.y = dropZone.y
                 gameObject.input.enabled = false
-                self.socket.emit('cardPlayedclient', gameObject)
+                self.socket.emit('cardPlayedclient', gameObject, self.isPlayerA, self.isPlayerB, self.isPlayerC, self.isPlayerD)
                 gameObject.destroy() // If card in dropZone not destroyed we get two cards being played in dropZone
             }
         }, this)
@@ -830,6 +832,7 @@ export default class Game extends Phaser.Scene {
             //  console.log('gameobject', gameObject)
             self.badMove = false
             if (!dropped && gameObject.type === "Image") {
+                // this will move card back to original position
                 if (self.isPlayerA) {
                     let pos1 = self.hand1.indexOf(gameObject.frame.name)
                     if (pos1 !== -1) {

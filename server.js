@@ -64,8 +64,8 @@ io.on('connection', async (socket) => {
             io.in(room).emit('colormoved', color)
         })
 
-        socket.on('cardPlayedclient', function (gameObject) {
-            io.in(room).emit('cardPlayed', gameObject)
+        socket.on('cardPlayedclient', function (gameObject, playerA, playerB, playerC, playerD) {
+            io.in(room).emit('cardPlayed', gameObject, playerA, playerB, playerC, playerD)
         })
 
         socket.on('resetclient', function () {
