@@ -835,6 +835,8 @@ export default class Game extends Phaser.Scene {
                 alert('Please deal the cards.')
                 gameObject.x = gameObject.input.dragStartX
                 gameObject.y = gameObject.input.dragStartY
+                let data = { name: gameObject.data.list.name, dragX: gameObject.x, dragY: gameObject.y }
+                self.socket.emit('moveCompletedclient', data)
                 return
             } 
             self.badMove = false
