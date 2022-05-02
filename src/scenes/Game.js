@@ -831,6 +831,12 @@ export default class Game extends Phaser.Scene {
 
         this.input.on('dragend', function (pointer, gameObject, dropped) {
             //  console.log('gameobject', gameObject)
+            if (self.DealCardsButton.text === 'Deal Cards'){
+                alert('Please deal the cards.')
+                gameObject.x = gameObject.input.dragStartX
+                gameObject.y = gameObject.input.dragStartY
+                return
+            } 
             self.badMove = false
             if (!dropped && gameObject.type === "Image") {
                 // this will move card back to original position

@@ -1,23 +1,18 @@
 
 <html>
-    <style>
-        input[type=button] {
-            background-color: orange;
-            border: solid;
-            text-decoration: none;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
-    <p align="center">
-        <input type="text" name="nameField" placeholder="Enter game name" style="font-size: 32px">
-        <input type="button" name="playButton" value="Let's Play" style="font-size: 32px">
-        <br><br><br><br>
+    <br><br>
+    <div class="container-fluid">
+        <div class="input-group">
+
+        <input type="text" class="form-control" name="nameField" placeholder="Enter game name here" style="font-size: 22px;">
+        <button type="button" class="btn btn-success" name="playButton">Let's Play</button>
+        </div>
+        <br><br>
         
-        
-            <input type='button' name='instruct' value='Instructions' style='font-size: 28px'>
-        
+        <div class="text-center">  
+            <button type='button' class="btn btn-primary btn-lg" name='instruct'>Instructions</button>
+        </div>
     
-        </p>
+    </div>
 </html>
 
