@@ -22,7 +22,8 @@ let rooms = [];
 //*** beginning of socket connection */
 io.on('connection', async (socket) => {
     console.log('A user connected: ' + socket.id);
-
+    const transport = socket.conn.transport.name;
+    console.log('transport',transport);
     socket.on('roominfo', (room, playersrealname) => {
         socket.join(room)
         rooms.push({ gameName: room, connectionID: socket.id, player: playersrealname })

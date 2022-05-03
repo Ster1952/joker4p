@@ -323,13 +323,7 @@ export default class Game extends Phaser.Scene {
 
         // CONNECTION TO SERVER ESTABLISHED
 
-        const options = {
-            transports: ["websocket"],
-            allowUpgrades: false,
-            pingInterval: 30000,
-            pingTimeout: 60000}
-
-        this.socket = io(options);
+        this.socket = io({transports: ["websocket"]});
 
         while (waiting) {
             this.player_no = prompt("Please enter a player number (1,2,3,or 4).")
