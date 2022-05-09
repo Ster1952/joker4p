@@ -350,7 +350,9 @@ export default class Game extends Phaser.Scene {
         }
 
         self.socket.on('connect', async () => {
-            self.socket.emit('roominfo', tableID, self.player_no)
+            await new Promise(resolve => {
+                self.socket.emit('roominfo', tableID, self.player_no, (ans) => {resolve(ans)})
+            })
         })
 
         self.socket.on('disconnection_info', function (person, reason) {
@@ -364,7 +366,7 @@ export default class Game extends Phaser.Scene {
             scene.start('titlescreen')
         })
 
-        self.socket.on('PlayerInfo', function (data) {
+        self.socket.on('PlayerInfo', async function (data) {
             //this shows which players are connected to the room
             let roomsConnected = [];
             let pp1 = false
@@ -391,8 +393,9 @@ export default class Game extends Phaser.Scene {
             if (roomsConnected.some(p => p.player === '4')) {
                 pp4 = true
             }
-
-            self.socket.emit('connectedPlayersServer', pp1, pp2, pp3, pp4)
+            await new Promise(resolve => {
+                self.socket.emit('connectedPlayersServer', pp1, pp2, pp3, pp4, (ans) => {resolve(ans), console.log('ans= ', ans.status)}) 
+            })
 
         })
 
@@ -425,16 +428,12 @@ export default class Game extends Phaser.Scene {
 
         //  ------- REMOTE PLAYERS SECTION ---------   
 
-        self.socket.on('reset', function () {
-            console.log('reset data available', self.cardsPlayedObjects)
-            for (let i = 0; i < self.playersHand.length; i++) {
-                //console.log('hands---', self.playersHand[i].frame.name)
-                self.playersHand[i].destroy()
-            }
-            for (let i = 0; i < self.cardsPlayedObjects.length; i++) {
-                //console.log(self.cardsPlayedObjects[i])
-                self.cardsPlayedObjects[i].destroy()
-            }
+        self.socket.on('reset', async function () {
+           // console.log('reset data available', self.cardsPlayedObjects)
+            
+            self.playersHand.forEach(item => item.destroy())
+            self.cardsPlayedObjects.forEach(item => item.destroy())
+
             self.playersHand = []
             self.cardsPlayedFrames = []
             self.cardsPlayedObjects = []
@@ -477,8 +476,8 @@ export default class Game extends Phaser.Scene {
             self.children.bringToTop(bottom5)
 
             // Deal new hands to players
-
-            self.socket.emit('dealCardsclient')
+            self.socket.emit('dealCardsclient')  
+            
         })
 
         self.socket.on('syncBoard', function (h1, h2, h3, h4, deck, cardsPlayedFrames, t1x, t1y,t2x,t2y,t3x,t3y,t4x,t4y,t5x,t5y,
@@ -520,67 +519,30 @@ export default class Game extends Phaser.Scene {
         })
 
         self.socket.on('moveCompleted', function (data){
-            console.log('--- move completed ---', data.name, data.dragX, data.dragY )
-            if (data.name === 'left1'){
-                self.gameObject = left1
+
+            let lookup = {
+                'left1': left1,
+                'left2': left2,
+                'left3': left3,
+                'left4': left4,
+                'left5': left5,
+                'right1': right1,
+                'right2': right2,
+                'right3': right3,
+                'right4': right4,
+                'right5': right5,
+                'top1': top1,
+                'top2': top2,
+                'top3': top3,
+                'top4': top4,
+                'top5': top5,
+                'bottom1': bottom1,
+                'bottom2': bottom2,
+                'bottom3': bottom3,
+                'bottom4': bottom4,
+                'bottom5': bottom5
             }
-            else if (data.name === 'left2'){
-                self.gameObject = left2
-            }
-            else if (data.name === 'left3'){
-                self.gameObject = left3
-            }
-            else if (data.name === 'left4'){
-                self.gameObject = left4
-            }
-            else if (data.name === 'left5'){
-                self.gameObject = left5
-            }
-            else if (data.name === 'right1'){
-                self.gameObject = right1
-            }
-            else if (data.name === 'right2'){
-                self.gameObject = right2
-            }
-            else if (data.name === 'right3'){
-                self.gameObject = right3
-            }
-            else if (data.name === 'right4'){
-                self.gameObject = right4
-            }
-            else if (data.name === 'right5'){
-                self.gameObject = right5
-            }
-            else if (data.name === 'top1'){
-                self.gameObject = top1
-            }
-            else if (data.name === 'top2'){
-                self.gameObject = top2
-            }
-            else if (data.name === 'top3'){
-                self.gameObject = top3
-            }
-            else if (data.name === 'top4'){
-                self.gameObject = top4
-            }
-            else if (data.name === 'top5'){
-                self.gameObject = top5
-            }
-            else if (data.name === 'bottom1'){
-                self.gameObject = bottom1
-            }
-            else if (data.name === 'bottom2'){
-                self.gameObject = bottom2
-            }
-            else if (data.name === 'bottom3'){
-                self.gameObject = bottom3
-            }
-            else if (data.name === 'bottom4'){
-                self.gameObject = bottom4
-            }
-            else if (data.name === 'bottom5'){
-                self.gameObject = bottom5
-            }
+            self.gameObject = lookup[data.name] 
             self.children.bringToTop(self.gameObject)
             self.gameObject.x = data.dragX
             self.gameObject.y = data.dragY
@@ -659,7 +621,7 @@ export default class Game extends Phaser.Scene {
         })
 
         self.socket.on('colormoved', function (colorplayed) {
-            console.log('colormoved', colorplayed, self.cardsPlayedFrames)
+            //console.log('colormoved', colorplayed, self.cardsPlayedFrames)
             let ghf = homefull(top1, top2, top3, top4, top5, self.topHome)
             let yhf = homefull(right1, right2, right3, right4, right5, self.rightHome)
             let rhf = homefull(bottom1, bottom2, bottom3, bottom4, bottom5, self.bottomHome)
@@ -790,7 +752,7 @@ export default class Game extends Phaser.Scene {
         }, this)
 
 
-        this.input.on('dragstart', function (pointer, gameObject) {
+        this.input.on('dragstart', async function (pointer, gameObject) {
             if (gameObject.type === "Sprite") {
                 self.markerText.setText('')
                 self.markerText = self.add.text(gameObject.x - 16, gameObject.y - 22, '*', { color: 'white', fontSize: 'bold 55px' }).setInteractive()
@@ -801,8 +763,8 @@ export default class Game extends Phaser.Scene {
             }
         }, this)
 
-        this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            console.log('drag', gameObject.type)
+        this.input.on('drag', async function (pointer, gameObject, dragX, dragY) {
+           // console.log('drag', gameObject.type)
             gameObject.x = dragX;
             gameObject.y = dragY;
             if (gameObject.type === "Sprite") {
@@ -895,7 +857,6 @@ export default class Game extends Phaser.Scene {
                         self.socket.emit('colormovedclient',  isColour)
                     } else if (gameObject.frame.name === 'green' ) {
                         var isColour = 'green';
-                        console.log('marlbe green')
                         self.socket.emit('colormovedclient',  isColour)
                     } else if (gameObject.frame.name === 'blue' && yhf && rhf && self.previousPlayer === 'red') {
                         var isColour = 'yellow';
@@ -1131,17 +1092,17 @@ export default class Game extends Phaser.Scene {
             else if (item.frame.name === "red" && group.frame.name === "green") {
                 // Check to see if green home is occupied, if so move marble
                 if (gh_occupied_with_red) {
-                    console.log('gh occupied with red marble')
+                   // console.log('gh occupied with red marble')
                     self.physics.world.overlap(self.bottomMarble, TopHome, move_partners_Marble)
                     self.physics.world.overlap(self.rightMarble, BottomHome, move_opponets_Marble)
                     self.physics.world.overlap(self.leftMarble, BottomHome, move_opponets_Marble)
                 }
                 else if (gh_occupied_with_blue) {
-                    console.log('gh occupied with blue marble')
+                    //console.log('gh occupied with blue marble')
                     self.physics.world.overlap(self.rightMarble, TopHome, move_opponets_Marble)
                 }
                 else if (gh_occupied_with_yellow) {
-                    console.log('gh occupied with yellow marble')
+                   // console.log('gh occupied with yellow marble')
                     self.physics.world.overlap(self.leftMarble, TopHome, move_opponets_Marble)
                 }
                 self.gameObject = group
@@ -1334,7 +1295,7 @@ export default class Game extends Phaser.Scene {
         }
 
         function move_partners_Marble(item, group) {
-            console.log('move partner marble ', group.data.list.name)
+            //console.log('move partner marble ', group.data.list.name)
             group.x = group.data.values.homeX
             group.y = group.data.values.homeY
             let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
@@ -1342,7 +1303,7 @@ export default class Game extends Phaser.Scene {
         }
 
         function move_opponets_Marble(item, group) {
-            console.log('move opponets marble ', group.data.list.name)
+           // console.log('move opponets marble ', group.data.list.name)
             group.x = group.data.values.X
             group.y = group.data.values.Y
             let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }

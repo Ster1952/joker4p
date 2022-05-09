@@ -24,7 +24,10 @@ io.on('connection', async (socket) => {
     console.log('A user connected: ' + socket.id);
     const transport = socket.conn.transport.name;
     console.log('transport',transport);
-    socket.on('roominfo', (room, playersrealname) => {
+    socket.on('roominfo', (room, playersrealname, callback) => {
+        callback({
+            status: 'successful'
+        })
         socket.join(room)
         rooms.push({ gameName: room, connectionID: socket.id, player: playersrealname })
         console.log('users that are connected',rooms)
@@ -36,7 +39,10 @@ io.on('connection', async (socket) => {
 
         io.to(socket.id).emit('PlayerInfo', rooms)
                 
-        socket.on('connectedPlayersServer', function(p1,p2,p3,p4){
+        socket.on('connectedPlayersServer', function(p1,p2,p3,p4, callback){
+            callback({
+                status: 'successful'
+            });
             io.to(room).emit('connectedPlayers', p1,p2,p3,p4)
         })
 
@@ -45,7 +51,6 @@ io.on('connection', async (socket) => {
         })
 
         socket.on('moveCompletedclient', (data) => {
-            
             socket.to(room).emit('moveCompleted', data)
         })
 
@@ -54,7 +59,7 @@ io.on('connection', async (socket) => {
             io.in(room).emit('winners', data)
         })
 
-        socket.on('dealCardsclient', function () {
+        socket.on('dealCardsclient', () => {
             // console.log('hands',hands)
             let hands = createHands()
             io.in(room).emit('dealCards', hands) // to all clients in the same room
