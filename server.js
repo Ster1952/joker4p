@@ -78,10 +78,8 @@ io.on('connection', async (socket) => {
             io.to(room).emit('reset')
         })
 
-        socket.on('sync_client', function(h1,h2,h3,h4,deck,cardsPlayedFrames, t1x, t1y,t2x,t2y,t3x,t3y,t4x,t4y,t5x,t5y,
-            l1x, l1y,l2x,l2y,l3x,l3y,l4x,l4y,l5x,l5y, b1x, b1y,b2x,b2y,b3x,b3y,b4x,b4y,b5x,b5y, r1x, r1y,r2x,r2y,r3x,r3y,r4x,r4y,r5x,r5y){
-            socket.in(room).emit('syncBoard', h1,h2,h3,h4,deck,cardsPlayedFrames,t1x, t1y,t2x,t2y,t3x,t3y,t4x,t4y,t5x,t5y,
-            l1x, l1y,l2x,l2y,l3x,l3y,l4x,l4y,l5x,l5y, b1x, b1y,b2x,b2y,b3x,b3y,b4x,b4y,b5x,b5y, r1x, r1y,r2x,r2y,r3x,r3y,r4x,r4y,r5x,r5y)
+        socket.on('sync_client', function(h1,h2,h3,h4,deck,cardsPlayedFrames, t1,t2,t3,t4,t5, l1,l2,l3,l4,l5, b1,b2,b3,b4,b5,r1,r2,r3,r4,r5){
+            socket.in(room).emit('syncBoard', h1,h2,h3,h4,deck,cardsPlayedFrames, t1,t2,t3,t4,t5, l1,l2,l3,l4,l5, b1,b2,b3,b4,b5,r1,r2,r3,r4,r5)
         })
         
 
