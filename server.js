@@ -6,7 +6,8 @@ const options = {
     allowUpgrades: false,
     pingInterval: 30000,
     pingTimeout: 60000,
-    cookie: false}
+    cookie: false
+}
 const app = express();
 const httpServer = createServer(app)
 const io = new Server(httpServer, options);
@@ -22,32 +23,61 @@ let rooms = [];
 //*** beginning of socket connection */
 io.on('connection', async (socket) => {
     console.log('A user connected: ' + socket.id);
-    const transport = socket.conn.transport.name;
-    console.log('transport',transport);
-    socket.on('roominfo', (room, playersrealname, callback) => {
-        callback({
-            status: 'successful'
-        })
+    socket.on('roominfo', (room, name_of_player_connecting) => {
+
         socket.join(room)
-        rooms.push({ gameName: room, connectionID: socket.id, player: playersrealname })
-        console.log('users that are connected',rooms)
         const clients = socket.adapter.rooms.get(room);
-        const numClients = clients ? clients.size : 0;
-        if (numClients > 4){
-            io.to(socket.id).emit('playerWarning')
+        let players_num = clients.size;
+        //console.log('client size', players_num)
+        if (clients.size === 1) {
+            rooms.push({ gameName: room, connectionID: socket.id, player: players_num, playername: name_of_player_connecting })
         }
 
-        io.to(socket.id).emit('PlayerInfo', rooms)
-                
-        socket.on('connectedPlayersServer', function(p1,p2,p3,p4, callback){
+        let roomsattached = rooms.filter(p => p.gameName === room);
+        //console.log('roomsattached', roomsattached)
+        if (roomsattached.length > 0 && clients.size > 1) {
+            let check_for_player1 = roomsattached.some(p => p.player === 1)
+            let check_for_player2 = roomsattached.some(p => p.player === 2)
+            let check_for_player3 = roomsattached.some(p => p.player === 3)
+            let check_for_player4 = roomsattached.some(p => p.player === 4)
+            if (!check_for_player1) {
+                players_num = 1;
+                rooms.push({ gameName: room, connectionID: socket.id, player: players_num, playername: name_of_player_connecting })
+            }
+            else if (!check_for_player2) {
+                players_num = 2;
+                rooms.push({ gameName: room, connectionID: socket.id, player: players_num, playername: name_of_player_connecting })
+            }
+            else if (!check_for_player3) {
+                players_num = 3;
+                rooms.push({ gameName: room, connectionID: socket.id, player: players_num, playername: name_of_player_connecting })
+            }
+            else if (!check_for_player4) {
+                players_num = 4;
+                rooms.push({ gameName: room, connectionID: socket.id, player: players_num, playername: name_of_player_connecting })
+            }
+
+            //console.log('test results', check_for_player1, check_for_player2, check_for_player3, check_for_player4)
+        }
+
+        const numClients = clients ? clients.size : 0;
+        if (numClients > 4) {
+            io.to(socket.id).emit('playerWarning')
+            rooms.push({ gameName: room, connectionID: socket.id, player: 5, playername: name_of_player_connecting })
+        }
+        let roomsConnected = rooms.filter(p => p.gameName === room)
+        //console.log('rooms connected to a particler game name', roomsConnected)
+        io.to(socket.id).emit('PlayerInfo', roomsConnected)
+
+        socket.on('connectedPlayersServer', function (p1, p2, p3, p4, top, left, bottom, right, callback) {
             callback({
                 status: 'successful'
             });
-            io.to(room).emit('connectedPlayers', p1,p2,p3,p4)
+            io.to(room).emit('connectedPlayers', p1, p2, p3, p4, top, left, bottom, right)
         })
 
-        socket.on('markerclient', function(posX,posY){
-            socket.to(room).emit('marker',posX,posY)
+        socket.on('markerclient', function (posX, posY) {
+            socket.to(room).emit('marker', posX, posY)
         })
 
         socket.on('moveCompletedclient', (data) => {
@@ -55,7 +85,7 @@ io.on('connection', async (socket) => {
         })
 
         socket.on('winner', (data) => {
-            console.log('winner',data)
+            console.log('winner', data)
             io.in(room).emit('winners', data)
         })
 
@@ -65,7 +95,7 @@ io.on('connection', async (socket) => {
             io.in(room).emit('dealCards', hands) // to all clients in the same room
         })
 
-        socket.on('colormovedclient', function(color){
+        socket.on('colormovedclient', function (color) {
             console.log('colors: ', color)
             io.in(room).emit('colormoved', color)
         })
@@ -78,27 +108,30 @@ io.on('connection', async (socket) => {
             io.to(room).emit('reset')
         })
 
-        socket.on('sync_client', function(h1,h2,h3,h4,deck,cardsPlayedFrames, t1,t2,t3,t4,t5, l1,l2,l3,l4,l5, b1,b2,b3,b4,b5,r1,r2,r3,r4,r5){
-            socket.in(room).emit('syncBoard', h1,h2,h3,h4,deck,cardsPlayedFrames, t1,t2,t3,t4,t5, l1,l2,l3,l4,l5, b1,b2,b3,b4,b5,r1,r2,r3,r4,r5)
+        socket.on('sync_client', function (h1, h2, h3, h4, deck, cardsPlayedFrames, t1, t2, t3, t4, t5, l1, l2, l3, l4, l5, b1, b2, b3, b4, b5, r1, r2, r3, r4, r5) {
+            socket.in(room).emit('syncBoard', h1, h2, h3, h4, deck, cardsPlayedFrames, t1, t2, t3, t4, t5, l1, l2, l3, l4, l5, b1, b2, b3, b4, b5, r1, r2, r3, r4, r5)
         })
-        
 
-       
+
+
     }) // end of room connection
 
     socket.on('disconnect', (reason) => {
         console.log("A user disconnected: " + socket.id)
-        let removeIndex = rooms.map(function(e){return e.connectionID;}).indexOf(socket.id)
+
+        let removeIndex = rooms.map(function (e) { return e.connectionID; }).indexOf(socket.id)
         // get the room name of the player that disconnected
         let rm = rooms[removeIndex].gameName
         let person = rooms[removeIndex].player
-        rooms.splice(removeIndex,1)
+        rooms.splice(removeIndex, 1)
+        let roomGroup = rooms.filter(p => p.gameName === rm);
         // let the other players know some has disconnected
-        io.to(rm).emit('PlayerInfo', rooms)
+        console.log('disconnect info', rooms)
+        io.to(rm).emit('PlayerInfo', roomGroup)
         io.to(rm).emit('disconnection_info', person, reason)
 
     });
-    
+
 });   //** end of socket connection */
 
 httpServer.listen(PORT, async () => {
@@ -120,7 +153,8 @@ function createHands() {
         'jjc', 'jjd', 'jjh', 'jjs', 'qqc', 'qqd', 'qqh', 'qqs', 'kkc', 'kkd', 'kkh', 'kks', 'aac', 'aad', 'aah', 'aas', 'bbj', 'rrj'];
 
     shuffle(originalDeck);
-    let jokerDeck = originalDeck.slice();
+    let jokerDeck = [...originalDeck]
+    //let jokerDeck = originalDeck.slice();
     let hand1 = [];
     let hand2 = [];
     let hand3 = [];

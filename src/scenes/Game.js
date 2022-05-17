@@ -13,10 +13,11 @@ export default class Game extends Phaser.Scene {
         //**  note playing cards are preloaded in title scene   */
 
         this.load.image('background', 'src/images/sand.png')
-        this.load.image('joker_sign', 'src/images/joker.png')
+        this.load.image('jokersign1', 'src/images/jokersign1.png')
+        this.load.image('jokersign2', 'src/images/jokersign2.png')
+        this.load.image('jokerhat', 'src/images/jokerhat.png')
         this.load.atlas('sphere', 'src/images/marbles.png', 'src/images/marbles.json')
-
-
+    
 
     }
 
@@ -45,7 +46,10 @@ export default class Game extends Phaser.Scene {
         const tableID = self.text
         let waiting = true
 
-
+        let nameTopPlayer = ''
+        let nameBottomPlayer = ''
+        let nameLeftPlayer = ''
+        let nameRightPlayer = ''
 
         // GAME BOARD HOLES
         this.gameBoard = this.physics.add.group({ immovable: true })
@@ -59,7 +63,10 @@ export default class Game extends Phaser.Scene {
         this.leftHome = this.physics.add.group()
 
         this.add.image(0, 0, 'background').setOrigin(0.0)
-        this.add.image(415, 415, 'joker_sign')
+        this.add.image(415, 565, 'jokersign2')
+        this.add.image(415, 255, 'jokersign1')
+        let jokerHat = this.add.image(170, 295, 'jokerhat').setScale(.25)
+        let jokerHat2 = this.add.image(655, 525, 'jokerhat').setScale(.25)
         this.outline = this.zone.renderOutline(this.dropZone)
 
         this.gameBoard.create(50, 90, 'sphere', 'blackdot').refreshBody().setCircle(16) // Hole 72
@@ -308,6 +315,12 @@ export default class Game extends Phaser.Scene {
             .setData({ name: 'right5', X: 140, Y: 410, homeX: 50, homeY: 650 })
             .setCollideWorldBounds(true)
 
+        // Player colour indicators
+        let greenMarblemarker = this.topMarble.create(290, 330, 'sphere', 'green')
+        let redMarblemarker = this.topMarble.create(290, 370, 'sphere', 'red')
+        let blueMarblemarker = this.topMarble.create(290, 450, 'sphere', 'blue')
+        let yellowMarblemarker = this.topMarble.create(290, 490, 'sphere', 'yellow')
+
         // Circle for connected players
         let c1 = this.add.circle(975, 105, 11, 0x000000)
         let c2 = this.add.circle(1005, 105, 11, 0x000000)
@@ -326,33 +339,15 @@ export default class Game extends Phaser.Scene {
         this.socket = io({ transports: ["websocket"] });
 
         while (waiting) {
-            this.player_no = prompt("Please enter a player number (1,2,3,or 4).")
-            if (self.player_no === '1' || self.player_no === '2' || self.player_no === '3' || self.player_no === '4') {
+            this.player_name = prompt("Please enter you first NAME. ")
+            if (self.player_name.length > 0) {
                 waiting = false
-            }
-            if (self.player_no === '1') {
-                self.isPlayerA = true
-                this.add.text(325, 460, " You are GREEN", { font: "24px Arial", fill: "05ffa1" })
-                console.log('isPlayerA')
-            } else if (self.player_no === '2') {
-                self.isPlayerB = true
-                this.add.text(325, 460, "  You are BLUE", { font: "24px Arial", fill: "05ffa1" })
-                console.log('isPlayerB')
-            } else if (self.player_no === '3') {
-                self.isPlayerC = true
-                this.add.text(325, 460, "   You are RED", { font: "24px Arial", fill: "05ffa1" })
-                console.log('isPlayerC')
-            } else if (self.player_no === '4') {
-                self.isPlayerD = true
-                this.add.text(325, 460, " You are YELLOW", { font: "24px Arial", fill: "05ffa1" })
-                console.log('isPlayerD')
             }
         }
 
-        self.socket.on('connect', async () => {
-            await new Promise(resolve => {
-                self.socket.emit('roominfo', tableID, self.player_no, (ans) => { resolve(ans) })
-            })
+        self.socket.on('connect', () => {
+                self.socket.emit('roominfo', tableID, self.player_name )
+        
         })
 
         self.socket.on('disconnection_info', function (person, reason) {
@@ -366,44 +361,47 @@ export default class Game extends Phaser.Scene {
             scene.start('titlescreen')
         })
 
+
         self.socket.on('PlayerInfo', async function (data) {
             //this shows which players are connected to the room
-            let roomsConnected = data.filter(p => p.gameName === tableID).map(p => p.player)
-            //console.log('rooms connected', roomsConnected, data)
-            let duplicate_room_number_found = roomsConnected.some((val, index) => index !== roomsConnected.indexOf(val));
+            console.log('Player Info data -->>',data)
 
-            if (duplicate_room_number_found) {
-                alert(`Someone else has registered already as Player ${self.player_no}`)
-                self.socket.disconnect()
-                scene.start('titlescreen')
-            }
+            let roomsConnected = data.map(p => p.player) // produces array of rooms connected
+            console.log('rooms connected', roomsConnected)
 
-            let pp1 = roomsConnected.some(p => p === '1')
-            let pp2 = roomsConnected.some(p => p === '2')
-            let pp3 = roomsConnected.some(p => p === '3')
-            let pp4 = roomsConnected.some(p => p === '4')
+            let pp1 = roomsConnected.some(p => p === 1)
+            let pp2 = roomsConnected.some(p => p === 2)
+            let pp3 = roomsConnected.some(p => p === 3)
+            let pp4 = roomsConnected.some(p => p === 4)
+
+            data.forEach(id_for_Player)
+            data.forEach(name_of_player)
 
             await new Promise(resolve => {
-                self.socket.emit('connectedPlayersServer', pp1, pp2, pp3, pp4, (ans) => { resolve(ans), console.log('ans= ', ans.status) })
+                self.socket.emit('connectedPlayersServer', pp1, pp2, pp3, pp4, nameTopPlayer, nameLeftPlayer,nameBottomPlayer,nameRightPlayer, (ans) => { resolve(ans), console.log('ans= ', ans.status) })
             })
+        
 
         })
 
-
-        self.socket.on('connectedPlayers', function (p1, p2, p3, p4) {
+        
+        self.socket.on('connectedPlayers', function (p1, p2, p3, p4, topPlayer, leftPlayer, bottomPlayer, rightPlayer) {
             //console.log('connected player', p1,p2,p3,p4)
             p1 ? c1.fillColor = 0x00ff00 : c1.fillColor = 0x000000
             p2 ? c2.fillColor = 0x00ff00 : c2.fillColor = 0x000000
             p3 ? c3.fillColor = 0x00ff00 : c3.fillColor = 0x000000
             p4 ? c4.fillColor = 0x00ff00 : c4.fillColor = 0x000000
-
+            
+            p1 ? self.topContestant.text = topPlayer : self.topContestant.text = '' 
+            p2 ? self.leftContestant.text = leftPlayer : self.leftContestant.text = ''
+            p3 ? self.bottomContestant.text = bottomPlayer : self.bottomContestant.text = ''
+            p4 ? self.rightContestant.text = rightPlayer : self.rightContestant.text = ''
+            
         })
-
-
 
         //  ------- REMOTE PLAYERS SECTION ---------   
 
-        self.socket.on('reset', async function () {
+        self.socket.on('reset', function () {
             // console.log('reset data available', self.cardsPlayedObjects)
 
             self.playersHand.forEach(item => item.destroy())
@@ -514,8 +512,6 @@ export default class Game extends Phaser.Scene {
 
 
         self.socket.on('cardPlayed', function (gameObject, playerA, playerB, playerC, playerD) {
-            //console.log('card played by other player', self.isPlayerA,self.isPlayerB,self.isPlayerC,self.isPlayerD)
-            // console.log('who player',  playerA, playerB, playerC, playerD)
             self.cardsPlayedFrames.push(gameObject.frameKey)
             //console.log('cards played remote player', gameObject.frameKey)
             let card = new Card(self)
@@ -525,7 +521,6 @@ export default class Game extends Phaser.Scene {
 
             if (self.isPlayerA && playerA) {
                 let index1 = self.hand1.indexOf(gameObject.frameKey);
-                //console.log('index 1 ==========', index1, gameObject.frameKey, self.hand1)
                 if (index1 !== -1) {
                     let card = new Card(self)
                     let deckcard1 = card.render(900 + (index1 * 50), 680, 'cards', self.deck[0]).setDepth(index1)
@@ -534,7 +529,6 @@ export default class Game extends Phaser.Scene {
                 }
             } else if (self.isPlayerB && playerB) {
                 let index2 = self.hand2.indexOf(gameObject.frameKey);
-                //console.log('index 2 ==========', index2, gameObject.frameKey, self.hand2)
                 if (index2 !== -1) {
                     let card = new Card(self)
                     let deckcard2 = card.render(900 + (index2 * 50), 680, 'cards', self.deck[0]).setDepth(index2)
@@ -543,7 +537,6 @@ export default class Game extends Phaser.Scene {
                 }
             } else if (self.isPlayerC && playerC) {
                 let index3 = self.hand3.indexOf(gameObject.frameKey);
-                // console.log('index 3 ==========', index3, gameObject.frameKey, self.hand3)
                 if (index3 !== -1) {
                     let card = new Card(self)
                     let deckcard3 = card.render(900 + (index3 * 50), 680, 'cards', self.deck[0]).setDepth(index3)
@@ -552,7 +545,6 @@ export default class Game extends Phaser.Scene {
                 }
             } else if (self.isPlayerD && playerD) {
                 let index4 = self.hand4.indexOf(gameObject.frameKey);
-                // console.log('index 4 ==========', index4, gameObject.frameKey, self.hand4)
                 if (index4 !== -1) {
                     let card = new Card(self)
                     let deckcard4 = card.render(900 + (index4 * 50), 680, 'cards', self.deck[0]).setDepth(index4)
@@ -562,10 +554,6 @@ export default class Game extends Phaser.Scene {
             }
 
             self.deck.shift()
-            //console.log('card played -- players hands---',self.hand1,self.hand2,self.hand3,self.hand4)
-            //console.log('deck',self.deck)
-            // console.log('card played', self.cardsPlayedFrames)
-
 
             if (self.cardsPlayedFrames.length === 84) {
                 self.deck = Phaser.Utils.Array.Shuffle(self.cardsPlayedFrames)
@@ -615,20 +603,20 @@ export default class Game extends Phaser.Scene {
             self.hand4 = hand[3]
             self.deck = hand[4]
             self.playersHand = self.dealer.dealCards(hand)
-
-
-            // console.log('----  player hands ----', self.playersHand)
             self.DealCardsButton.setText('')
             self.DealCardsButton.disableInteractive()
             self.DealCardsButton.setStyle({ backgroundColor: ' ' })
             self.DealCardsButton.setPadding(0, 0, 0, 0)
-            //console.log(' dealcards -- players hands---',self.hand1,self.hand2,self.hand3,self.hand4)
         })
 
         // -------- LOCAL PLAYER SECTION -----------
 
-        this.errormsg = this.add.text(950, 500, '', { font: "18px Arial", fill: "05ffa1" })
-        //this.contestant = this.add.text(325,460, "",{font: "24px Arial", fill: "05ffa1"})
+        this.errormsg = this.add.text(940, 500, '', { font: "18px Arial", fill: "05ffa1" })
+        this.topContestant = this.add.text(320 ,315, '',{fontSize: "bold 32px", fill: "05ffa1"})
+        this.bottomContestant = this.add.text(320,355, '',{fontSize: "bold 32px", fill: "05ffa1"})
+        this.leftContestant = this.add.text(320,435, '',{fontSize: "bold 32px", fill: "05ffa1"})
+        this.rightContestant = this.add.text(320,475, '',{fontSize: "Bold 32px", fill: "05ffa1"})
+
         this.resetGame = this.add.text(964, 40, 'New Game', { fontSize: 'bold 24px' })
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', () => self.socket.emit('resetclient'))
@@ -637,7 +625,7 @@ export default class Game extends Phaser.Scene {
 
         this.colorsturn = this.add.text(870, 190, '', { fontSize: 'bold 30px', color: 'black' })
 
-        this.DealCardsButton = this.add.text(945, 200, 'Deal Cards', { fontSize: 'bold 24px' })
+        this.DealCardsButton = this.add.text(945, 520, 'Deal Cards', { fontSize: 'bold 24px' })
             .setPadding(7)
             .setStyle({ backgroundColor: '#FF' })
             .setInteractive({ useHandCursor: true })
@@ -661,7 +649,7 @@ export default class Game extends Phaser.Scene {
             }
         }, this)
 
-        this.input.on('dragstart', async function (pointer, gameObject) {
+        this.input.on('dragstart', function (pointer, gameObject) {
             if (gameObject.type === "Sprite") {
                 self.markerText.setText('')
                 self.errormsg.setText('')
@@ -673,7 +661,7 @@ export default class Game extends Phaser.Scene {
             }
         }, this)
 
-        this.input.on('drag', async function (pointer, gameObject, dragX, dragY) {
+        this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
             // console.log('drag', gameObject.type)
             gameObject.x = dragX;
             gameObject.y = dragY;
@@ -696,15 +684,6 @@ export default class Game extends Phaser.Scene {
         }, this)
 
         this.input.on('dragend', function (pointer, gameObject, dropped) {
-            //  console.log('gameobject', gameObject)
-            if (self.DealCardsButton.text === 'Deal Cards') {
-                alert('Please deal the cards.')
-                gameObject.x = gameObject.input.dragStartX
-                gameObject.y = gameObject.input.dragStartY
-                let data = { name: gameObject.data.list.name, dragX: gameObject.x, dragY: gameObject.y }
-                self.socket.emit('moveCompletedclient', data)
-                return
-            }
             self.badMove = false
             if (!dropped && gameObject.type === "Image") {
                 // this will move card back to original position
@@ -1135,6 +1114,41 @@ export default class Game extends Phaser.Scene {
             group.y = group.data.values.Y
             let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
             self.socket.emit('moveCompletedclient', data)
+        }
+
+
+        function name_of_player(e){
+
+            if (e.player === 1) { nameTopPlayer = e.playername } 
+            
+            if (e.player === 2) { nameLeftPlayer = e.playername } 
+
+            if (e.player === 3) { nameBottomPlayer = e.playername } 
+
+            if (e.player === 4) { nameRightPlayer = e.playername } 
+        }
+
+        function id_for_Player (element){
+            let playersnumber = 0;
+            if (element.playername === self.player_name){
+                playersnumber = element.player; 
+            };
+            if (playersnumber === 1) {
+                self.isPlayerA = true
+                console.log('isPlayerA')
+            }
+            if (playersnumber === 2) {
+                self.isPlayerB = true
+                console.log('isPlayerB')
+            }
+            if (playersnumber === 3) {
+                self.isPlayerC = true
+                console.log('isPlayerC')
+            }
+            if (playersnumber === 4) {
+                self.isPlayerD = true
+                console.log('isPlayerD')
+            }
         }
 
 
