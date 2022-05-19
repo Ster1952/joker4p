@@ -46,7 +46,7 @@ export default class TitleScreen extends Phaser.Scene {
                 scene.start('instruction')
             }
         })
-
+        
         this.input.keyboard.on('keydown-ENTER', function (event) {
 
             var inputVal = element.getChildByName('nameField');

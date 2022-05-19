@@ -65,8 +65,8 @@ export default class Game extends Phaser.Scene {
         this.add.image(0, 0, 'background').setOrigin(0.0)
         this.add.image(415, 565, 'jokersign2')
         this.add.image(415, 255, 'jokersign1')
-        let jokerHat = this.add.image(170, 295, 'jokerhat').setScale(.25)
-        let jokerHat2 = this.add.image(655, 525, 'jokerhat').setScale(.25)
+        this.add.image(170, 295, 'jokerhat').setScale(.25)
+        this.add.image(655, 525, 'jokerhat').setScale(.25)
         this.outline = this.zone.renderOutline(this.dropZone)
 
         this.gameBoard.create(50, 90, 'sphere', 'blackdot').refreshBody().setCircle(16) // Hole 72
@@ -316,10 +316,10 @@ export default class Game extends Phaser.Scene {
             .setCollideWorldBounds(true)
 
         // Player colour indicators
-        let greenMarblemarker = this.topMarble.create(290, 330, 'sphere', 'green')
-        let redMarblemarker = this.topMarble.create(290, 370, 'sphere', 'red')
-        let blueMarblemarker = this.topMarble.create(290, 450, 'sphere', 'blue')
-        let yellowMarblemarker = this.topMarble.create(290, 490, 'sphere', 'yellow')
+        this.topMarble.create(290, 330, 'sphere', 'green')
+        this.topMarble.create(290, 370, 'sphere', 'red')
+        this.topMarble.create(290, 450, 'sphere', 'blue')
+        this.topMarble.create(290, 490, 'sphere', 'yellow')
 
         // Circle for connected players
         let c1 = this.add.circle(975, 105, 11, 0x000000)
@@ -340,7 +340,13 @@ export default class Game extends Phaser.Scene {
 
         while (waiting) {
             this.player_name = prompt("Please enter you first NAME. ")
-            if (self.player_name.length > 0) {
+            
+            if (self.player_name === null){
+                waiting = false
+                self.socket.disconnect()
+                scene.start('titlescreen')
+            }
+            else if (self.player_name.length > 0) {
                 waiting = false
             }
         }
@@ -378,7 +384,8 @@ export default class Game extends Phaser.Scene {
             data.forEach(name_of_player)
 
             await new Promise(resolve => {
-                self.socket.emit('connectedPlayersServer', pp1, pp2, pp3, pp4, nameTopPlayer, nameLeftPlayer,nameBottomPlayer,nameRightPlayer, (ans) => { resolve(ans), console.log('ans= ', ans.status) })
+                self.socket.emit('connectedPlayersServer', pp1, pp2, pp3, pp4, nameTopPlayer, nameLeftPlayer,nameBottomPlayer,nameRightPlayer,
+                 (ans) => { resolve(ans), console.log('ans= ', ans.status) })
             })
         
 
@@ -736,53 +743,37 @@ export default class Game extends Phaser.Scene {
                     }
 
                     if (gameObject.frame.name === 'green' && rhf && bhf && self.previousPlayer === 'blue') {
-                        var isColour = 'red';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('red')
                     } else if (gameObject.frame.name === 'green' && rhf && self.previousPlayer === 'red') {
-                        var isColour = 'red';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('red')
                     } else if (gameObject.frame.name === 'green' && rhf && self.previousPlayer === 'blue') {
-                        var isColour = 'red';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('red')
                     } else if (gameObject.frame.name === 'green') {
-                        var isColour = 'green';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('green')
                     } else if (gameObject.frame.name === 'blue' && yhf && rhf && self.previousPlayer === 'red') {
-                        var isColour = 'yellow';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('yellow')
                     } else if (gameObject.frame.name === 'blue' && yhf && self.previousPlayer === 'yellow') {
-                        var isColour = 'yellow';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('yellow')
                     } else if (gameObject.frame.name === 'blue' && yhf && self.previousPlayer === 'red') {
-                        var isColour = 'yellow';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('yellow')
                     } else if (gameObject.frame.name === 'blue') {
-                        var isColour = 'blue';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('blue')
                     } else if (gameObject.frame.name === 'red' && ghf && yhf && self.previousPlayer === 'yellow') {
-                        var isColour = 'green';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('green')
                     } else if (gameObject.frame.name === 'red' && ghf && self.previousPlayer === 'green') {
-                        var isColour = 'green';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('green')
                     } else if (gameObject.frame.name === 'red' && ghf && self.previousPlayer === 'yellow') {
-                        var isColour = 'green';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('green')
                     } else if (gameObject.frame.name === 'red') {
-                        var isColour = 'red';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('red')
                     } else if (gameObject.frame.name === 'yellow' && bhf && ghf && self.previousPlayer === 'green') {
-                        var isColour = 'blue';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('blue')
                     } else if (gameObject.frame.name === 'yellow' && bhf && self.previousPlayer === 'blue') {
-                        var isColour = 'blue';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('blue')
                     } else if (gameObject.frame.name === 'yellow' && bhf && self.previousPlayer === 'green') {
-                        var isColour = 'blue';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('blue')
                     } else if (gameObject.frame.name === 'yellow') {
-                        var isColour = 'yellow';
-                        self.socket.emit('colormovedclient', isColour)
+                        colorsTurn('yellow')
                     } else {
                         return false;
                     }
@@ -811,21 +802,23 @@ export default class Game extends Phaser.Scene {
 
         //** Checks to see if home is full of not */
         function homefull(x1, x2, x3, x4, x5, Home) {
-            let p1 = false
-            let p2 = false
-            let p3 = false
-            let p4 = false
-            let p5 = false
-            p1 = self.physics.world.overlap(x1, Home)
-            p2 = self.physics.world.overlap(x2, Home)
-            p3 = self.physics.world.overlap(x3, Home)
-            p4 = self.physics.world.overlap(x4, Home)
-            p5 = self.physics.world.overlap(x5, Home)
+            let p1 = self.physics.world.overlap(x1, Home)
+            let p2 = self.physics.world.overlap(x2, Home)
+            let p3 = self.physics.world.overlap(x3, Home)
+            let p4 = self.physics.world.overlap(x4, Home)
+            let p5 = self.physics.world.overlap(x5, Home)
             if (p1 && p2 && p3 && p4 && p5) {
                 return true
             } else {
                 return false
             }
+        }
+
+        async function colorsTurn(colour){
+            await new Promise(resolve => {
+                self.socket.emit('colormovedclient', colour,
+                 (ans) => { resolve(ans), console.log('ans= ', ans.status) })
+            })
         }
 
         //** Snaps game marble in place when dropped slight of the holw */
@@ -1120,11 +1113,8 @@ export default class Game extends Phaser.Scene {
         function name_of_player(e){
 
             if (e.player === 1) { nameTopPlayer = e.playername } 
-            
             if (e.player === 2) { nameLeftPlayer = e.playername } 
-
             if (e.player === 3) { nameBottomPlayer = e.playername } 
-
             if (e.player === 4) { nameRightPlayer = e.playername } 
         }
 

@@ -95,7 +95,10 @@ io.on('connection', async (socket) => {
             io.in(room).emit('dealCards', hands) // to all clients in the same room
         })
 
-        socket.on('colormovedclient', function (color) {
+        socket.on('colormovedclient', function (color, callback) {
+            callback({
+                status: 'color recieved'
+            });
             console.log('colors: ', color)
             io.in(room).emit('colormoved', color)
         })
