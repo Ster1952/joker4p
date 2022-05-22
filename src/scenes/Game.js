@@ -814,12 +814,6 @@ export default class Game extends Phaser.Scene {
             }
         }
 
-        async function colorsTurn(colour){
-            await new Promise(resolve => {
-                self.socket.emit('colormovedclient', colour,
-                 (ans) => { resolve(ans), console.log('ans= ', ans.status) })
-            })
-        }
 
         //** Snaps game marble in place when dropped slight of the holw */
         function board(obj, lm) {
@@ -1107,6 +1101,13 @@ export default class Game extends Phaser.Scene {
             group.y = group.data.values.Y
             let data = { name: group.data.list.name, dragX: group.x, dragY: group.y }
             self.socket.emit('moveCompletedclient', data)
+        }
+
+        async function colorsTurn(colour){
+            await new Promise(resolve => {
+                self.socket.emit('colormovedclient', colour,
+                (ans)=> {resolve(ans), console.log('ans= ', ans.status)})
+            })
         }
 
 
