@@ -1,0 +1,1 @@
+Online card game for four players.  A ZOOM type app is also needed to provide audio and video collaboration between players while playing.
