@@ -327,7 +327,7 @@ export default class Game extends Phaser.Scene {
         let c3 = this.add.circle(1035, 105, 11, 0x000000)
         let c4 = this.add.circle(1065, 105, 11, 0x000000)
 
-        console.log('tableID', tableID)
+        //console.log('tableID', tableID)
 
         window.addEventListener('beforeunload', ev => {
             ev.preventDefault()
@@ -357,7 +357,7 @@ export default class Game extends Phaser.Scene {
         })
 
         self.socket.on('disconnection_info', function (person, reason) {
-            console.log('Player ' + person + ' disconnect because ' + reason)
+            //console.log('Player ' + person + ' disconnect because ' + reason)
             self.errormsg.text = "Player " + person + " disconnected \nbecause " + reason
         })
 

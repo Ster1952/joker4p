@@ -22,7 +22,7 @@ let rooms = [];
 
 //*** beginning of socket connection */
 io.on('connection', async (socket) => {
-    console.log('A user connected: ' + socket.id);
+    //console.log('A user connected: ' + socket.id);
     socket.on('roominfo', (room, name_of_player_connecting) => {
 
         socket.join(room)
@@ -85,7 +85,7 @@ io.on('connection', async (socket) => {
         })
 
         socket.on('winner', (data) => {
-            console.log('winner', data)
+            //console.log('winner', data)
             io.in(room).emit('winners', data)
         })
 
@@ -99,7 +99,7 @@ io.on('connection', async (socket) => {
             callback({
                 status: 'color recieved'
             });
-            console.log('colors: ', color)
+            //console.log('colors: ', color)
             io.in(room).emit('colormoved', color)
         })
 
@@ -120,7 +120,7 @@ io.on('connection', async (socket) => {
     }) // end of room connection
 
     socket.on('disconnect', (reason) => {
-        console.log("A user disconnected: " + socket.id)
+        //console.log("A user disconnected: " + socket.id)
 
         let removeIndex = rooms.map(function (e) { return e.connectionID; }).indexOf(socket.id)
         // get the room name of the player that disconnected
@@ -129,7 +129,7 @@ io.on('connection', async (socket) => {
         rooms.splice(removeIndex, 1)
         let roomGroup = rooms.filter(p => p.gameName === rm);
         // let the other players know some has disconnected
-        console.log('disconnect info', rooms)
+        //console.log('disconnect info', rooms)
         io.to(rm).emit('PlayerInfo', roomGroup)
         io.to(rm).emit('disconnection_info', person, reason)
 
@@ -140,6 +140,7 @@ io.on('connection', async (socket) => {
 httpServer.listen(PORT, async () => {
     try {
         console.log('Listening on port :%s...', httpServer.address().port)
+        
     }
     catch (e) {
         console.error(e)
