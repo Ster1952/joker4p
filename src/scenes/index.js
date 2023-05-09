@@ -6,7 +6,8 @@ import Winner_GR_Screen from './Winner_GR_Screen.js'
 
 
 const config = {
-    type: Phaser.AUTO,
+    type: Phaser.CANVAS,
+    audio: {disableWebAudio: true},
     backgroundColor: '#616161',
     parent: 'phaser-container',
     scale: {
